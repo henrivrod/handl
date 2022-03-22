@@ -1,10 +1,10 @@
-### Build the NanoC parser
+### Build the HANDL parser
 
 ```
 ocamlbuild test.native
 ```
 
-### Run the NanoC parser
+### Run the HANDL parser
 ```
 ./test.native
 ```
@@ -17,5 +17,3 @@ ocamlbuild test.native
 ### Other files
 
 - `test.ml`: top-level file to test and run the scanner
-- `example.mc`: a sample NanoC source code
-- `example.out`: a sample parsed code of example.mc
