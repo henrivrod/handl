@@ -6,6 +6,7 @@ type expr =
   | Literal of int
   | BoolLit of bool
   | Id of string
+  | Not of expr
   | Binop of expr * bop * expr
   | Assign of string * expr
 
@@ -30,14 +31,15 @@ let string_of_op = function
   | Equal -> "=="
   | Neq -> "!="
   | Less -> "<"
-  | And -> "&&"
-  | Or -> "||"
+  | And -> "and"
+  | Or -> "or"
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s
+  | Not(e) -> "not " ^ string_of_expr e
   | Binop(e1, o, e2) ->
     string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e

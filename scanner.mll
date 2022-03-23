@@ -20,8 +20,9 @@ rule token = parse
 | "=="     { EQ }
 | "!="     { NEQ }
 | '<'      { LT }
-| "&&"     { AND }
-| "||"     { OR }
+| "and"    { AND }
+| "or"     { OR }
+| "not"    { NOT }
 | "if"     { IF }
 | "else"   { ELSE }
 | "while"  { WHILE }

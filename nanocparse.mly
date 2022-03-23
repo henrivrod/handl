@@ -5,7 +5,7 @@ open Ast
 %}
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE PLUS MINUS ASSIGN
-%token EQ NEQ LT AND OR
+%token EQ NEQ LT AND OR NOT
 %token IF ELSE WHILE INT BOOL
 %token RETURN COMMA
 %token <int> LITERAL
@@ -17,6 +17,7 @@ open Ast
 %type <Ast.program> program_rule
 
 %right ASSIGN
+%left NOT
 %left OR
 %left AND
 %left EQ NEQ
@@ -61,5 +62,6 @@ expr_rule:
   | expr_rule LT expr_rule        { Binop ($1, Less, $3)  }
   | expr_rule AND expr_rule       { Binop ($1, And, $3)   }
   | expr_rule OR expr_rule        { Binop ($1, Or, $3)    }
+  | NOT expr_rule                 { Not ($2)              }
   | ID ASSIGN expr_rule           { Assign ($1, $3)       }
   | LPAREN expr_rule RPAREN       { $2                    }
