@@ -1,6 +1,8 @@
 type bop = Add | Sub | Equal | Neq | Less | And | Or
 
-type typ = Int | Bool
+type prim = Int | Bool
+
+type typ = PrimitiveType of prim | ArrayType of typ
 
 type expr =
   | Literal of int
@@ -9,6 +11,8 @@ type expr =
   | Not of expr
   | Binop of expr * bop * expr
   | Assign of string * expr
+  | ArrAssign of string * expr * expr
+  | ArrAccess of string * expr
 
 type stmt =
   | Block of stmt list
@@ -34,6 +38,14 @@ let string_of_op = function
   | And -> "and"
   | Or -> "or"
 
+let string_of_prim = function
+    Int -> "int"
+    | Bool -> "bool"
+
+let rec string_of_typ = function
+  PrimitiveType(t) -> string_of_prim t
+  | ArrayType(t) -> "Array <" ^ string_of_typ t ^ ">"
+
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | BoolLit(true) -> "true"
@@ -43,18 +55,17 @@ let rec string_of_expr = function
   | Binop(e1, o, e2) ->
     string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
+  | ArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "]" ^
+                            " = " ^ string_of_expr e2
+  | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
 
 let rec string_of_stmt = function
     Block(stmts) ->
     "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ ";\n";
   | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
-                      string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
+                        string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
-
-let string_of_typ = function
-    Int -> "int"
-  | Bool -> "bool"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
