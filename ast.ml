@@ -1,12 +1,13 @@
-type bop = Add | Sub | Equal | Neq | Less | And | Or
+type bop = Add | Sub | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
-type prim = Int | Bool
+type prim = Int | Bool | Float
 
 type typ = PrimitiveType of prim | ArrayType of typ
 
 type expr =
   | Literal of int
   | BoolLit of bool
+  | FloatLit of float
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -34,13 +35,17 @@ let string_of_op = function
   | Sub -> "-"
   | Equal -> "=="
   | Neq -> "!="
+  | LessEqual -> "<="
+  | GreaterEqual -> ">="
   | Less -> "<"
+  | Greater -> ">"
   | And -> "and"
   | Or -> "or"
 
 let string_of_prim = function
     Int -> "int"
     | Bool -> "bool"
+    | Float -> "float"
 
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
@@ -48,6 +53,7 @@ let rec string_of_typ = function
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
+  | FloatLit(f) -> string_of_float f
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s

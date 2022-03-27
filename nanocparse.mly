@@ -5,11 +5,12 @@ open Ast
 %}
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE PLUS MINUS ASSIGN LBRACK RBRACK
-%token EQ NEQ LT GT AND OR NOT
-%token IF ELSE WHILE INT BOOL
+%token EQ NEQ LT GT AND OR NOT LEQ GEQ
+%token IF ELSE WHILE INT BOOL FLOAT
 %token RETURN COMMA ARRAY
 %token <int> LITERAL
 %token <bool> BLIT
+%token <float> FLIT
 %token <string> ID
 %token EOF
 
@@ -20,8 +21,9 @@ open Ast
 %left NOT
 %left OR
 %left AND
-%left EQ NEQ
+%left EQ NEQ LEQ GEQ
 %left LT
+%left GT
 %left PLUS MINUS
 
 %%
@@ -43,6 +45,7 @@ typ_rule:
 primitive_typ:
   INT                       { Int  }
   | BOOL                    { Bool }
+  | FLOAT                   { Float }
 
 array_typ_rule:
   ARRAY LT typ_rule GT      { ArrayType($3) }
@@ -60,12 +63,16 @@ stmt_rule:
 expr_rule:
   | BLIT                                        { BoolLit $1            }
   | LITERAL                                     { Literal $1            }
+  | FLIT                                        { FloatLit $1            }
   | ID                                          { Id $1                 }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
   | expr_rule MINUS expr_rule                   { Binop ($1, Sub, $3)   }
   | expr_rule EQ expr_rule                      { Binop ($1, Equal, $3) }
   | expr_rule NEQ expr_rule                     { Binop ($1, Neq, $3)   }
   | expr_rule LT expr_rule                      { Binop ($1, Less, $3)  }
+  | expr_rule GT expr_rule        { Binop ($1, Greater, $3)  }
+  | expr_rule LEQ expr_rule        { Binop ($1, LessEqual, $3)  }
+  | expr_rule GEQ expr_rule        { Binop ($1, GreaterEqual, $3)  }
   | expr_rule AND expr_rule                     { Binop ($1, And, $3)   }
   | expr_rule OR expr_rule                      { Binop ($1, Or, $3)    }
   | NOT expr_rule                               { Not ($2)              }
