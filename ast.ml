@@ -23,6 +23,7 @@ type stmt =
   | If of expr * stmt * els
   | While of expr * stmt
   | ForMeasure of int * int * expr * stmt
+  | For of expr * expr * expr * stmt
 and els = NoElse | Else of stmt | ElseIf of expr * stmt * els
 
 type bind = typ * string
@@ -84,6 +85,8 @@ let rec string_of_stmt = function
   | If(e, s, el) ->  "if (" ^ string_of_expr e ^ ") {\n" ^
                         string_of_stmt s ^ "}" ^ string_of_else el
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
+  | ForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_expr e ^ ") " ^ string_of_stmt s
+  | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1 ^ "; " ^ string_of_expr e2 ^ "; " ^ string_of_expr e3 ^ "; " ^ string_of_stmt s
 and string_of_else = function
     NoElse -> ""
     | Else(s) -> "\nelse {\n" ^ string_of_stmt s ^ "}"

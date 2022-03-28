@@ -67,6 +67,7 @@ stmt_rule:
   | IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt        { If ($3, $6, $8)  }
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
   | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
+  | FOR LPAREN expr_rule SEMI expr_rule SEMI expr_rule RPAREN stmt_rule  { For($3, $5, $7, $9) }
 
 else_stmt:
                                                                         { NoElse           }
