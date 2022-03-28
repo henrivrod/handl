@@ -38,6 +38,8 @@ rule token = parse
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
 | "Array"  { ARRAY }
+| "String" { STRING }
+| '"'((digit | letter)* as str)'"'  { STRLIT(str) }
 | digit+ as lem  { LITERAL(int_of_string lem) }
 | digit+ '.' digit+ ( ['e' 'E'] ['+' '-']? digit+ )? as lem {FLIT(float_of_string lem) }
 | letter (digit | letter | '_')* as lem { ID(lem) }

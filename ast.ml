@@ -1,6 +1,6 @@
 type bop = Add | Sub | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
-type prim = Int | Bool | Float
+type prim = Int | Bool | Float | String
 
 type typ = PrimitiveType of prim | ArrayType of typ
 
@@ -8,6 +8,7 @@ type expr =
   | Literal of int
   | BoolLit of bool
   | FloatLit of float
+  | StrLit of string
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -46,6 +47,7 @@ let string_of_prim = function
     Int -> "int"
     | Bool -> "bool"
     | Float -> "float"
+    | String -> "string"
 
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
@@ -56,6 +58,7 @@ let rec string_of_expr = function
   | FloatLit(f) -> string_of_float f
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
+  | StrLit(l)     -> l
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
   | Binop(e1, o, e2) ->
