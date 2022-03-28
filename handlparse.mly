@@ -1,4 +1,4 @@
-/* Ocamlyacc parser for NanoC */
+/* Ocamlyacc parser for HANDL */
 
 %{
 open Ast

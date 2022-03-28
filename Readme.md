@@ -12,7 +12,7 @@ ocamlbuild test.native
 ### Compiler files
 -  `ast.ml`: abstract syntax tree (AST)
 -  `scanner.mll`: scanner
--  `nanocparse.mly`: parser
+-  `handlparse.mly`: parser
 
 ### Other files
 
