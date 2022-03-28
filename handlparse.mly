@@ -61,10 +61,15 @@ stmt_list_rule:
     | stmt_rule stmt_list_rule  { $1::$2 }
 
 stmt_rule:
-  expr_rule SEMI                                          { Expr $1         }
-  | LBRACE stmt_list_rule RBRACE                          { Block $2        }
-  | IF LPAREN expr_rule RPAREN stmt_rule ELSE stmt_rule   { If ($3, $5, $7) }
-  | WHILE LPAREN expr_rule RPAREN stmt_rule               { While ($3,$5)   }
+  expr_rule SEMI                                                        { Expr $1          }
+  | LBRACE stmt_list_rule RBRACE                                        { Block $2         }
+  | IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt        { If ($3, $6, $8)  }
+  | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
+
+else_stmt:
+  ""                                                                    { NoElse           }
+  | ELSE LBRACE stmt_rule RBRACE else_stmt                                    { Else $3          }
+  | ELSE IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt    { ElseIf($4,$7,$9) }
 
 expr_rule:
   | BLIT                                        { BoolLit $1            }
