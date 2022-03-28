@@ -6,11 +6,12 @@ open Ast
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE PLUS MINUS ASSIGN LBRACK RBRACK
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
-%token IF ELSE WHILE INT BOOL FLOAT STRING
+%token IF ELSE WHILE INT BOOL FLOAT CHAR STRING
 %token RETURN COMMA ARRAY
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
+%token <char> CHRLIT
 %token <string> ID STRLIT
 %token EOF
 
@@ -46,6 +47,7 @@ primitive_typ:
   INT                       { Int  }
   | BOOL                    { Bool }
   | FLOAT                   { Float }
+  | CHAR                    { Char }
   | STRING                  { String }
 
 array_typ_rule:
@@ -65,6 +67,7 @@ expr_rule:
   | BLIT                                        { BoolLit $1            }
   | LITERAL                                     { Literal $1            }
   | FLIT                                        { FloatLit $1           }
+  | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
   | ID                                          { Id $1                 }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
