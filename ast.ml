@@ -1,4 +1,4 @@
-type bop = Add | Sub | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
+type bop = Add | Sub | Div | Mult | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
 type prim = Int | Bool | Float | String
 
@@ -34,6 +34,8 @@ type program = {
 let string_of_op = function
     Add -> "+"
   | Sub -> "-"
+  | Mult -> "*"
+  | Div -> "/"
   | Equal -> "=="
   | Neq -> "!="
   | LessEqual -> "<="
