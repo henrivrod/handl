@@ -44,6 +44,10 @@ rule token = parse
 | "Array"  { ARRAY }
 | "char"   { CHAR }
 | "String" { STRING }
+| "for" { FOR }
+| "measure" { MEASURE }
+| "through" { THROUGH }
+| "in" { IN }
 | '"'((digit | letter)* as str)'"'  { STRLIT(str) }
 | '''((digit | letter) as chr)'''   { CHRLIT(chr) }
 | digit+ as lem  { LITERAL(int_of_string lem) }

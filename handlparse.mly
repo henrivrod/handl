@@ -8,6 +8,7 @@ open Ast
 %token PLUS MINUS TIMES DIVISION MODULO POWER
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING
+%token FOR MEASURE THROUGH IN
 %token RETURN COMMA ARRAY
 %token <int> LITERAL
 %token <bool> BLIT
@@ -65,6 +66,7 @@ stmt_rule:
   | LBRACE stmt_list_rule RBRACE                                        { Block $2         }
   | IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt        { If ($3, $6, $8)  }
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
+  | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
 
 else_stmt:
                                                                         { NoElse           }

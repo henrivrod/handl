@@ -22,6 +22,7 @@ type stmt =
   | Expr of expr
   | If of expr * stmt * els
   | While of expr * stmt
+  | ForMeasure of int * int * expr * stmt
 and els = NoElse | Else of stmt | ElseIf of expr * stmt * els
 
 type bind = typ * string
