@@ -67,9 +67,9 @@ stmt_rule:
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
 
 else_stmt:
-  ""                                                                    { NoElse           }
-  | ELSE LBRACE stmt_rule RBRACE else_stmt                                    { Else $3          }
-  | ELSE IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt    { ElseIf($4,$7,$9) }
+                                                                        { NoElse           }
+  | ELSE LBRACE stmt_rule RBRACE else_stmt                              { Else $3          }
+  | ELSE IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt   { ElseIf($4,$7,$9) }
 
 expr_rule:
   | BLIT                                        { BoolLit $1            }

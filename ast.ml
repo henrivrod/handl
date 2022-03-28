@@ -85,7 +85,7 @@ let rec string_of_stmt = function
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 and string_of_else = function
     NoElse -> ""
-    | Else(s) -> "\nelse " ^ string_of_stmt s
+    | Else(s) -> "\nelse {\n" ^ string_of_stmt s ^ "}"
     | ElseIf(e,s,el) -> "\nelse if (" ^ string_of_expr e ^ ") { \n" ^
                        string_of_stmt s ^ "}" ^ string_of_else el
 
