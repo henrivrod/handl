@@ -4,7 +4,8 @@
 open Ast
 %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE PLUS MINUS ASSIGN LBRACK RBRACK
+%token SEMI LPAREN RPAREN LBRACE RBRACE ASSIGN LBRACK RBRACK
+%token PLUS MINUS TIMES DIVISION MODULO POWER
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING
 %token RETURN COMMA ARRAY
@@ -25,6 +26,8 @@ open Ast
 %left EQ NEQ LEQ GEQ
 %left LT
 %left GT
+%left POWER
+%left TIMES DIVISION MODULO
 %left PLUS MINUS
 
 %%
@@ -70,8 +73,12 @@ expr_rule:
   | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
   | ID                                          { Id $1                 }
+  | expr_rule POWER expr_rule                    { Binop ($1, Pow, $3)   }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
   | expr_rule MINUS expr_rule                   { Binop ($1, Sub, $3)   }
+  | expr_rule TIMES expr_rule                   { Binop ($1, Mult, $3)   }
+  | expr_rule DIVISION expr_rule                { Binop ($1, Div, $3)   }
+  | expr_rule MODULO expr_rule                  { Binop ($1, Mod, $3)   }
   | expr_rule EQ expr_rule                      { Binop ($1, Equal, $3) }
   | expr_rule NEQ expr_rule                     { Binop ($1, Neq, $3)   }
   | expr_rule LT expr_rule                      { Binop ($1, Less, $3)  }
