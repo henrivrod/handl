@@ -85,11 +85,13 @@ expr_rule:
   | FLIT                                        { FloatLit $1           }
   | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
+  | LBRACK RBRACK                               { EmptyArr              }
+  | LBRACK array RBRACK                         { ArrLit $2             }
   | ID                                          { Id $1                 }
-  | expr_rule POWER expr_rule                    { Binop ($1, Pow, $3)   }
+  | expr_rule POWER expr_rule                   { Binop ($1, Pow, $3)   }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
   | expr_rule MINUS expr_rule                   { Binop ($1, Sub, $3)   }
-  | expr_rule TIMES expr_rule                   { Binop ($1, Mult, $3)   }
+  | expr_rule TIMES expr_rule                   { Binop ($1, Mult, $3)  }
   | expr_rule DIVISION expr_rule                { Binop ($1, Div, $3)   }
   | expr_rule MODULO expr_rule                  { Binop ($1, Mod, $3)   }
   | expr_rule EQ expr_rule                      { Binop ($1, Equal, $3) }
@@ -106,5 +108,10 @@ expr_rule:
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
   | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
-  | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }  
-  | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }                    
+  | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
+  | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
+
+
+array:
+  | LITERAL             { [$1] }
+  | array COMMA LITERAL {$1 @ [$3]}

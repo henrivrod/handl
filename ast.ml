@@ -4,12 +4,16 @@ type prim = Int | Bool | Float | Char| String | Note
 
 type typ = PrimitiveType of prim | ArrayType of typ | PhraseType | SongType
 
+type arr = int list
+
 type expr =
   | Literal of int
   | BoolLit of bool
   | FloatLit of float
   | ChrLit of char
   | StrLit of string
+  | EmptyArr
+  | ArrLit of arr
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -68,6 +72,9 @@ let rec string_of_typ = function
   | _ -> failwith "Error"
 
 
+let rec string_of_arr l =
+  if List.length l > 1 then string_of_int (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_int (List.hd l)
+
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | FloatLit(f) -> string_of_float f
@@ -75,6 +82,8 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | StrLit(l) -> l
+  | EmptyArr -> "[]"
+  | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
   | Binop(e1, o, e2) ->
