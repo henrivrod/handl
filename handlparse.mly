@@ -104,5 +104,5 @@ expr_rule:
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
 
 array:
-  | LITERAL             { [$1] }
-  | array COMMA LITERAL {$1 @ [$3]}
+  | expr_rule             { [$1] }
+  | array COMMA expr_rule {$1 @ [$3]}

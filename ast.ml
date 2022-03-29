@@ -4,8 +4,6 @@ type prim = Int | Bool | Float | Char| String
 
 type typ = PrimitiveType of prim | ArrayType of typ
 
-type arr = int list
-
 type expr =
   | Literal of int
   | BoolLit of bool
@@ -20,6 +18,7 @@ type expr =
   | Assign of string * expr
   | ArrAssign of string * expr * expr
   | ArrAccess of string * expr
+and arr = expr list
 
 type stmt =
   | Block of stmt list
@@ -66,9 +65,6 @@ let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
   | ArrayType(t) -> "Array <" ^ string_of_typ t ^ ">"
 
-let rec string_of_arr l =
-  if List.length l > 1 then string_of_int (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_int (List.hd l)
-
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | FloatLit(f) -> string_of_float f
@@ -86,6 +82,8 @@ let rec string_of_expr = function
   | ArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "]" ^
                             " = " ^ string_of_expr e2
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
+and string_of_arr l =
+   if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
 
 let rec string_of_stmt = function
     Block(stmts) ->
