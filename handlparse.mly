@@ -7,7 +7,7 @@ open Ast
 %token SEMI LPAREN RPAREN LBRACE RBRACE ASSIGN LBRACK RBRACK
 %token PLUS MINUS TIMES DIVISION MODULO POWER
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
-%token IF ELSE WHILE INT BOOL FLOAT CHAR STRING
+%token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
 %token FOR MEASURE THROUGH IN
 %token RETURN COMMA ARRAY
 %token <int> LITERAL
@@ -100,4 +100,5 @@ expr_rule:
   | LPAREN expr_rule RPAREN                     { $2                    }
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
+  | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
 

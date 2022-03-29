@@ -1,6 +1,6 @@
 type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
-type prim = Int | Bool | Float | Char| String 
+type prim = Int | Bool | Float | Char| String | Note
 
 type typ = PrimitiveType of prim | ArrayType of typ
 
@@ -16,6 +16,7 @@ type expr =
   | Assign of string * expr
   | ArrAssign of string * expr * expr
   | ArrAccess of string * expr
+  | NoteAssign of string * string * float
 
 type stmt =
   | Block of stmt list
@@ -57,6 +58,7 @@ let string_of_prim = function
     | Float -> "float"
     | String -> "string"
     | Char -> "char"
+    | Note -> "Note"
 
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
@@ -77,6 +79,7 @@ let rec string_of_expr = function
   | ArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "]" ^
                             " = " ^ string_of_expr e2
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
+  | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
 
 let rec string_of_stmt = function
     Block(stmts) ->
