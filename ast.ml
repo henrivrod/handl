@@ -4,8 +4,6 @@ type prim = Int | Bool | Float | Char| String | Note
 
 type typ = PrimitiveType of prim | ArrayType of typ | PhraseType | SongType
 
-type arr = int list
-
 type expr =
   | Literal of int
   | BoolLit of bool
@@ -23,6 +21,7 @@ type expr =
   | NoteAssign of string * string * float
   | PhraseAssign of string
   | SongAssign of string
+and arr = expr list
 
 type stmt =
   | Block of stmt list
@@ -71,10 +70,6 @@ let rec string_of_typ = function
   | ArrayType(t) -> "Array <" ^ string_of_typ t ^ ">"
   | _ -> failwith "Error"
 
-
-let rec string_of_arr l =
-  if List.length l > 1 then string_of_int (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_int (List.hd l)
-
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | FloatLit(f) -> string_of_float f
@@ -95,6 +90,8 @@ let rec string_of_expr = function
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
   | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
+and string_of_arr l =
+   if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
 
 let rec string_of_stmt = function
     Block(stmts) ->

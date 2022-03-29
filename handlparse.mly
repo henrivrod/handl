@@ -113,5 +113,5 @@ expr_rule:
 
 
 array:
-  | LITERAL             { [$1] }
-  | array COMMA LITERAL {$1 @ [$3]}
+  | expr_rule             { [$1] }
+  | array COMMA expr_rule {$1 @ [$3]}
