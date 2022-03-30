@@ -8,6 +8,7 @@ At this stage in our development of Handl, we have provided most of the Front-en
 ```
 .add(), .timeSignature, .bars, .tempo, .measure(), .play(), and .save()
 ```
+We will also need to work further on our semantic checker and sast file. We have the barebones of them but still need to work on fixing them up so they actually work.
 
 ### Build the HANDL parser
 
@@ -29,7 +30,8 @@ ocamlbuild test.native
 
 ### Other files
 
-- `test.ml`: top-level file to test and run the scanner
+- `test.ml`: top-level file to test and run the scanner/parser
 - `test2.ml`: the file to test the semantic checker
+- 'helloWorld.hdl': example text to input to parser
 
 
