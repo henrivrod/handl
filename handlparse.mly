@@ -9,7 +9,7 @@ open Ast
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
 %token FOR MEASURE THROUGH IN
-%token RETURN COMMA ARRAY PHRASE
+%token RETURN COMMA ARRAY PHRASE SONG
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
@@ -60,6 +60,7 @@ array_typ_rule:
 
 handl_typ_rule:
   PHRASE                    { PhraseType }
+  | SONG                      { SongType }
 
 stmt_list_rule:
     /* nothing */               { []     }
@@ -105,4 +106,5 @@ expr_rule:
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
   | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
-  | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }                  
+  | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }  
+  | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }                    
