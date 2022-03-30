@@ -80,7 +80,7 @@ let rec string_of_expr = function
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
-  | StrLit(l) -> l
+  | StrLit(l) -> "\"" ^ l ^ "\""
   | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e

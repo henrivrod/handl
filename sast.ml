@@ -51,7 +51,8 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   | SChrLit(l) -> "'" ^ Char.escaped l ^ "'"
-  | SStrLit(l) -> l
+  | SStrLit(l) -> "\"" ^ l ^ "\""
+  | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | SId(s) -> s
   | SNot(e) -> "not " ^ string_of_expr e
   | SBinop(e1, o, e2) ->
@@ -63,6 +64,12 @@ let rec string_of_sexpr (t, e) =
   | SNoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
+  | SCall(f, el) ->
+            f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+      ) ^ ")"
+  and string_of_arr l =
+     if List.length l = 0 then "" else
+     if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
 
 let rec string_of_sstmt = function
     SBlock(stmts) -> "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
