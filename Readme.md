@@ -24,7 +24,12 @@ ocamlbuild test.native
 -  `ast.ml`: abstract syntax tree (AST)
 -  `scanner.mll`: scanner
 -  `handlparse.mly`: parser
+-  `sast.ml`: definition of the semantically-checked AST (IN PROGRESS)
+-  `semant.ml`: semantic checking (IN PROGRESS)
 
 ### Other files
 
 - `test.ml`: top-level file to test and run the scanner
+- `test2.ml`: the file to test the semantic checker
+
+

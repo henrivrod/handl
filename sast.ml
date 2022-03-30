@@ -9,7 +9,7 @@ and sx =
   | SFloatLit of float
   | SChrLit of char
   | SStrLit of string
-  | SArrLit of expr list
+  | SArrLit of sexpr list
   | SId of string
   | SNot of sexpr
   | SBinop of sexpr * bop * sexpr
@@ -23,14 +23,14 @@ and sx =
  
 
 type sstmt =
-    SBlock of stmt list
-  | SExpr of expr
-  | SIf of sexpr * sstmt * els
+    SBlock of sstmt list
+  | SExpr of sexpr
+  | SIf of sexpr * sstmt * sels
   | SWhile of sexpr * sstmt
   | SForMeasure of int * int * sexpr * sstmt
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SReturn of sexpr
-and els = NoElse | SElse of stmt | SElseIf of sexpr * sstmt * els
+and sels = NoElse | SElse of sstmt | SElseIf of sexpr * sstmt * sels
 
 (* func_def: ret_typ fname formals locals body *)
 type sfunc_def = {
@@ -54,13 +54,13 @@ let rec string_of_sexpr (t, e) =
   | SStrLit(l) -> "\"" ^ l ^ "\""
   | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | SId(s) -> s
-  | SNot(e) -> "not " ^ string_of_expr e
+  | SNot(e) -> "not " ^ string_of_sexpr e
   | SBinop(e1, o, e2) ->
-    string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
-  | SAssign(v, e) -> v ^ " = " ^ string_of_expr e
-  | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "]" ^
-                            " = " ^ string_of_expr e2
-  | SArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
+    string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
+  | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
+  | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "]" ^
+                            " = " ^ string_of_sexpr e2
+  | SArrAccess(s,e) -> s ^ "[" ^ string_of_sexpr e ^ "]"
   | SNoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
@@ -69,22 +69,22 @@ let rec string_of_sexpr (t, e) =
       ) ^ ")"
   and string_of_arr l =
      if List.length l = 0 then "" else
-     if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
+     if List.length l > 1 then string_of_sexpr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_sexpr (List.hd l)
 
 let rec string_of_sstmt = function
-    SBlock(stmts) -> "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
-  | SExpr(expr) -> string_of_expr expr ^ ";\n";
+    SBlock(stmts) -> "{\n" ^ String.concat "" (List.map string_of_sstmt stmts) ^ "}\n"
+  | SExpr(expr) -> string_of_sexpr expr ^ ";\n";
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ ";\n"
-  | SIf(e, s, el) ->  "if (" ^ string_of_expr e ^ ") {\n" ^
-                        string_of_stmt s ^ "}" ^ string_of_else el
-  | SWhile(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
-  | SForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_expr e ^ ") " ^ string_of_stmt s
-  | SFor(e1, e2, e3, s) -> "for (" ^ string_of_expr e1 ^ "; " ^ string_of_expr e2 ^ "; " ^ string_of_expr e3 ^ "; " ^ string_of_stmt s
+  | SIf(e, s, el) ->  "if (" ^ string_of_sexpr e ^ ") {\n" ^
+                        string_of_sstmt s ^ "}" ^ string_of_else el
+  | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
+  | SForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
+  | SFor(e1, e2, e3, s) -> "for (" ^ string_of_sexpr e1 ^ "; " ^ string_of_sexpr e2 ^ "; " ^ string_of_sexpr e3 ^ "; " ^ string_of_sstmt s
 and string_of_else = function
     NoElse -> ""
-    | SElse(s) -> "\nelse {\n" ^ string_of_stmt s ^ "}"
-    | SElseIf(e,s,el) -> "\nelse if (" ^ string_of_expr e ^ ") { \n" ^
-                       string_of_stmt s ^ "}" ^ string_of_else el
+    | SElse(s) -> "\nelse {\n" ^ string_of_sstmt s ^ "}"
+    | SElseIf(e,s,el) -> "\nelse if (" ^ string_of_sexpr e ^ ") { \n" ^
+                       string_of_sstmt s ^ "}" ^ string_of_else el
 
 let string_of_sfdecl fdecl =
   string_of_typ fdecl.srtyp ^ " " ^

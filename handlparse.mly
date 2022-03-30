@@ -103,7 +103,7 @@ stmt_rule:
 
 else_stmt:
                                                                         { NoElse           }
-  | ELSE LBRACE stmt_rule RBRACE else_stmt                              { Else $3          }
+  | ELSE LBRACE stmt_rule RBRACE                              { Else $3          }
   | ELSE IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt   { ElseIf($4,$7,$9) }
 
 expr_rule:
