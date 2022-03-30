@@ -99,6 +99,7 @@ stmt_rule:
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
   | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
   | FOR LPAREN expr_rule SEMI expr_rule SEMI expr_rule RPAREN stmt_rule  { For($3, $5, $7, $9) }
+  | RETURN expr_rule SEMI                        { Return $2      }
 
 else_stmt:
                                                                         { NoElse           }
@@ -111,8 +112,7 @@ expr_rule:
   | FLIT                                        { FloatLit $1           }
   | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
-  | LBRACK RBRACK                               { EmptyArr              }
-  | LBRACK array RBRACK                         { ArrLit $2             }
+  | LBRACK array_opt RBRACK                         { ArrLit $2             }
   | ID                                          { Id $1                 }
   | expr_rule POWER expr_rule                   { Binop ($1, Pow, $3)   }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
@@ -136,7 +136,12 @@ expr_rule:
   | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
+  | ID LPAREN array_opt RPAREN { Call ($1, $3)  }
+
+array_opt:
+  /*nothing*/ { [] }
+  | array { $1 }
 
 array:
-  | expr_rule             { [$1] }
-  | array COMMA expr_rule {$1 @ [$3]}
+  expr_rule  { [$1] }
+  | expr_rule COMMA array { $1::$3 }

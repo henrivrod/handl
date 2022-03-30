@@ -10,8 +10,7 @@ type expr =
   | FloatLit of float
   | ChrLit of char
   | StrLit of string
-  | EmptyArr
-  | ArrLit of arr
+  | ArrLit of expr list
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -21,7 +20,7 @@ type expr =
   | NoteAssign of string * string * float
   | PhraseAssign of string
   | SongAssign of string
-and arr = expr list
+  | Call of string * expr list
 
 type stmt =
   | Block of stmt list
@@ -30,6 +29,7 @@ type stmt =
   | While of expr * stmt
   | ForMeasure of int * int * expr * stmt
   | For of expr * expr * expr * stmt
+  | Return of expr
 and els = NoElse | Else of stmt | ElseIf of expr * stmt * els
 
 type bind = typ * string
@@ -81,7 +81,6 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | StrLit(l) -> l
-  | EmptyArr -> "[]"
   | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
@@ -94,7 +93,10 @@ let rec string_of_expr = function
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
   | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
+  | Call(f, el) ->
+        f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 and string_of_arr l =
+   if List.length l = 0 then "" else
    if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
 
 let rec string_of_stmt = function
@@ -106,6 +108,7 @@ let rec string_of_stmt = function
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | ForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1 ^ "; " ^ string_of_expr e2 ^ "; " ^ string_of_expr e3 ^ "; " ^ string_of_stmt s
+  | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
 and string_of_else = function
     NoElse -> ""
     | Else(s) -> "\nelse {\n" ^ string_of_stmt s ^ "}"
