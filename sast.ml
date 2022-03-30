@@ -9,6 +9,7 @@ and sx =
   | SFloatLit of float
   | SChrLit of char
   | SStrLit of string
+  | SArrLit of expr list
   | SId of string
   | SNot of sexpr
   | SBinop of sexpr * bop * sexpr
@@ -18,7 +19,6 @@ and sx =
   | SNoteAssign of string * string * float
   | SPhraseAssign of string
   | SSongAssign of string
-  (* call *)
   | SCall of string * sexpr list
  
 
@@ -29,9 +29,8 @@ type sstmt =
   | SWhile of sexpr * sstmt
   | SForMeasure of int * int * sexpr * sstmt
   | SFor of sexpr * sexpr * sexpr * sstmt
-and els = NoElse | SElse of stmt | SElseIf of sexpr * sstmt * els
-  (* return *)
   | SReturn of sexpr
+and els = NoElse | SElse of stmt | SElseIf of sexpr * sstmt * els
 
 (* func_def: ret_typ fname formals locals body *)
 type sfunc_def = {
