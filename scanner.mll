@@ -46,6 +46,7 @@ rule token = parse
 | "String" { STRING }
 | "for" { FOR }
 | "Note" { NOTE }
+| "Phrase" { PHRASE }
 | "measure" { MEASURE }
 | "through" { THROUGH }
 | "in" { IN }

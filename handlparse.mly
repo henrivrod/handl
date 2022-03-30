@@ -9,7 +9,7 @@ open Ast
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
 %token FOR MEASURE THROUGH IN
-%token RETURN COMMA ARRAY
+%token RETURN COMMA ARRAY PHRASE
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
@@ -46,6 +46,7 @@ vdecl_rule:
 typ_rule:
   primitive_typ             { PrimitiveType($1) }
   | array_typ_rule          { $1                }
+  | handl_typ_rule          { $1                }
 
 primitive_typ:
   INT                       { Int  }
@@ -56,6 +57,9 @@ primitive_typ:
 
 array_typ_rule:
   ARRAY LT typ_rule GT      { ArrayType($3) }
+
+handl_typ_rule:
+  PHRASE                    { PhraseType }
 
 stmt_list_rule:
     /* nothing */               { []     }
@@ -101,4 +105,4 @@ expr_rule:
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
   | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
-
+  | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }                  

@@ -2,7 +2,7 @@ type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | 
 
 type prim = Int | Bool | Float | Char| String | Note
 
-type typ = PrimitiveType of prim | ArrayType of typ
+type typ = PrimitiveType of prim | ArrayType of typ | PhraseType
 
 type expr =
   | Literal of int
@@ -17,6 +17,7 @@ type expr =
   | ArrAssign of string * expr * expr
   | ArrAccess of string * expr
   | NoteAssign of string * string * float
+  | PhraseAssign of string
 
 type stmt =
   | Block of stmt list
@@ -80,6 +81,7 @@ let rec string_of_expr = function
                             " = " ^ string_of_expr e2
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ pitch ^ ", " ^ string_of_float duration ^ ")"
+  | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
 
 let rec string_of_stmt = function
     Block(stmts) ->
