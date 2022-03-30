@@ -34,11 +34,15 @@ and els = NoElse | Else of stmt | ElseIf of expr * stmt * els
 
 type bind = typ * string
 
-type program = {
+type func_def = {
+  rtyp: typ;
+  fname: string;
+  formals: bind list;
   locals: bind list;
   body: stmt list;
 }
 
+type program = bind list * func_def list
 
 (* Pretty-printing functions *)
 let string_of_op = function
@@ -110,8 +114,15 @@ and string_of_else = function
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
-let string_of_program fdecl =
-  "\n\nParsed program: \n\n" ^
+let string_of_fdecl fdecl =
+  string_of_typ fdecl.rtyp ^ " " ^
+  fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
+  ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl fdecl.locals) ^
   String.concat "" (List.map string_of_stmt fdecl.body) ^
-  "\n"
+  "}\n"
+
+let string_of_program (vars, funcs) =
+  "\n\nParsed program: \n\n" ^
+  String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
+  String.concat "\n" (List.map string_of_fdecl funcs)

@@ -17,8 +17,8 @@ open Ast
 %token <string> ID STRLIT
 %token EOF
 
-%start program_rule
-%type <Ast.program> program_rule
+%start program
+%type <Ast.program> program
 
 %right ASSIGN
 %left NOT
@@ -32,22 +32,26 @@ open Ast
 %left PLUS MINUS
 
 %%
+program:
+  decls EOF { $1}
 
-program_rule:
-  vdecl_list_rule stmt_list_rule EOF { {locals=$1; body=$2} }
+decls:
+   /* nothing */ { ([], [])               }
+ | vdecl SEMI decls { (($1 :: fst $3), snd $3) }
+ | fdecl decls { (fst $2, ($1 :: snd $2)) }
 
-vdecl_list_rule:
-  /*nothing*/                   { []       }
-  | vdecl_rule vdecl_list_rule  { $1 :: $2 }
+vdecl_list:
+  /*nothing*/ { [] }
+  | vdecl SEMI vdecl_list  {  $1 :: $3 }
 
-vdecl_rule:
-  typ_rule ID SEMI { ($1, $2) }
+/* int x */
+vdecl:
+  typ_rule ID { ($1, $2) }
 
 typ_rule:
   primitive_typ             { PrimitiveType($1) }
   | array_typ_rule          { $1                }
   | handl_typ_rule          { $1                }
-
 primitive_typ:
   INT                       { Int  }
   | BOOL                    { Bool }
@@ -62,13 +66,35 @@ handl_typ_rule:
   PHRASE                    { PhraseType }
   | SONG                      { SongType }
 
-stmt_list_rule:
-    /* nothing */               { []     }
-    | stmt_rule stmt_list_rule  { $1::$2 }
+/* fdecl */
+fdecl:
+  vdecl LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+  {
+    {
+      rtyp=fst $1;
+      fname=snd $1;
+      formals=$3;
+      locals=$6;
+      body=$7
+    }
+  }
+
+/* formals_opt */
+formals_opt:
+  /*nothing*/ { [] }
+  | formals_list { $1 }
+
+formals_list:
+  vdecl { [$1] }
+  | vdecl COMMA formals_list { $1::$3 }
+
+stmt_list:
+  /* nothing */ { [] }
+  | stmt_rule stmt_list  { $1::$2 }
 
 stmt_rule:
   expr_rule SEMI                                                        { Expr $1          }
-  | LBRACE stmt_list_rule RBRACE                                        { Block $2         }
+  | LBRACE stmt_list RBRACE                                        { Block $2         }
   | IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt        { If ($3, $6, $8)  }
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
   | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
@@ -110,7 +136,6 @@ expr_rule:
   | NOTE ID ASSIGN NOTE LPAREN STRLIT COMMA FLIT RPAREN           { NoteAssign($2, $6, $8) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
-
 
 array:
   | expr_rule             { [$1] }
