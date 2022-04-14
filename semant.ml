@@ -78,17 +78,17 @@ let check (globals, functions) =
     let type_of_identifier s =
       let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in match temp with
-      PrimitiveType(t) -> t
+      PrimitiveType(t) -> PrimitiveType(t)
       | ArrayType(a) -> raise (Failure ("bad type"))
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec check_expr = function
-        Literal l -> (Int, SLiteral l)
-      | FloatLit(f) -> (Float, SFloatLit f)
-      | BoolLit l -> (Bool, SBoolLit l)
-      | ChrLit(l) -> (Char, SChrLit l)
-      | StrLit(l) -> (String, SStrLit l)
+        Literal l -> (PrimitiveType(Int), SLiteral l)
+      | FloatLit(f) -> (PrimitiveType(Float), SFloatLit f)
+      | BoolLit l -> (PrimitiveType(Bool), SBoolLit l)
+      | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
+      | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
       (*need to add arraylit*)
       | Assign(var, e) as ex ->
@@ -96,12 +96,12 @@ let check (globals, functions) =
         and (rt, e') = check_expr e in
         let err = "illegal assignment " ^ string_of_expr ex
         in
-        (check_assign lt rt err, SAssign(var, (PrimitiveType(rt), e')))
+        (check_assign lt rt err, SAssign(var, (rt, e')))
       | Not(e) ->
         let (t, e') = check_expr e
         in let err = "illegal not operator " ^ string_of_expr e
         in
-        if t = Bool then (t, e')
+        if t = PrimitiveType(Bool) then (t, e')
         else raise (Failure err)
       | Binop(e1, op, e2) as e ->
         let (t1, e1') = check_expr e1
@@ -112,15 +112,15 @@ let check (globals, functions) =
         if t1 = t2 then
           (* Determine expression type based on operator and operand types *)
           let t = match op with
-              Pow| Add | Sub | Mult | Mod when t1 = Int -> Int
-            | Pow| Add | Sub | Mult when t1 = Float -> Float
-            | Div when t1= Int or t1=Float -> Float
-            | Equal | Neq -> Bool
-            | Less | Greater | LessEqual | GreaterEqual when t1 = Int or t1=Float -> Bool
-            | And | Or when t1 = Bool -> Bool
+              Pow| Add | Sub | Mult | Mod when t1 = PrimitiveType(Int) -> PrimitiveType(Int)
+            | Pow| Add | Sub | Mult when t1 = PrimitiveType(Float) -> PrimitiveType(Int)
+            | Div when t1= PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Float)
+            | Equal | Neq -> PrimitiveType(Bool)
+            | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Bool)
+            | And | Or when t1 = PrimitiveType(Bool) -> PrimitiveType(Bool)
             | _ -> raise (Failure err)
           in
-          (t, SBinop((PrimitiveType(t1), e1'), op, (PrimitiveType(t2), e2')))
+          (t, SBinop((t1, e1'), op, (t2, e2')))
         else raise (Failure err)
       (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
@@ -143,7 +143,7 @@ let check (globals, functions) =
     let check_bool_expr e =
       let (t, e') = check_expr e in
       match t with
-      | Bool -> (t, e')
+      | PrimitiveType(Bool) -> (PrimitiveType(Bool), e')
       |  _ -> raise (Failure ("expected Boolean expression in " ^ string_of_expr e))
     in
 
@@ -157,8 +157,8 @@ let check (globals, functions) =
          follows any Return statement.  Nested blocks are flattened. *)
         Block sl -> SBlock (check_stmt_list sl)
       | Expr e -> SExpr (check_expr e)
-      | If(e, s, el) ->
-        SIf(check_bool_expr e, check_stmt s, check_else el)
+      (*| If(e, s, el) ->
+        SIf(check_bool_expr e, check_stmt s, check_else el)*)
       | While(e, st) ->
         SWhile(check_bool_expr e, check_stmt st)
       (*Need to add For and ForMeasure*)
@@ -168,10 +168,6 @@ let check (globals, functions) =
         else raise (
             Failure ("return gives " ^ string_of_typ t ^ " expected " ^
                      string_of_typ func.rtyp ^ " in " ^ string_of_expr e))
-    and check_else = function
-        NoElse -> NoElse
-      | Else(s) -> SElse(check_stmt s)
-      | ElseIf(e,s,el) -> SElseIf(check_bool_expr e, check_stmt s, check_else el)
     in (* body of check_func *)
     { srtyp = func.rtyp;
       sfname = func.fname;
