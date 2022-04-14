@@ -25,12 +25,12 @@ type expr =
 type stmt =
   | Block of stmt list
   | Expr of expr
-  | If of expr * stmt * els
+  | IfElse of expr * stmt * stmt
+  | If of expr * stmt
   | While of expr * stmt
   | ForMeasure of int * int * expr * stmt
   | For of expr * expr * expr * stmt
   | Return of expr
-and els = NoElse | Else of stmt | ElseIf of expr * stmt * els
 
 type bind = typ * string
 
@@ -103,17 +103,37 @@ let rec string_of_stmt = function
     Block(stmts) ->
     "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ ";\n";
-  | If(e, s, el) ->  "if (" ^ string_of_expr e ^ ") {\n" ^
-                        string_of_stmt s ^ "}" ^ string_of_else el
+  | IfElse(e, s1, s2) ->  string_of_if_else(e,s1,s2)
+  | If(e, s) -> string_of_if(e,s)
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | ForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1 ^ "; " ^ string_of_expr e2 ^ "; " ^ string_of_expr e3 ^ "; " ^ string_of_stmt s
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
-and string_of_else = function
-    NoElse -> ""
-    | Else(s) -> "\nelse {\n" ^ string_of_stmt s ^ "}"
-    | ElseIf(e,s,el) -> "\nelse if (" ^ string_of_expr e ^ ") { \n" ^
-                       string_of_stmt s ^ "}" ^ string_of_else el
+and string_of_if_else (e, s1, s2)=
+    let part1 =
+        match s1 with
+            Expr(expr)-> string_of_stmt s1
+            | Block(stmts)->string_of_stmt(s1)
+            | _ -> failwith "Error"
+    in
+    let part2 =
+        match s2 with
+            Expr(expr)-> "\n" ^ string_of_stmt s2
+            | Block(stmts)->"\n" ^ string_of_stmt(s2)
+            | IfElse(e,s1,s2)->string_of_stmt(s2)
+            | If(e,s) ->string_of_stmt(s2)
+            | _ -> failwith "Error"
+    in
+    "if (" ^ string_of_expr e ^ ")\n" ^
+        part1 ^  "else" ^ part2
+and string_of_if (e, s)=
+    let part1 =
+        match s with
+            Expr(expr)-> string_of_stmt s
+            | Block(stmts)->string_of_stmt(s)
+            | _ -> failwith "Error"
+    in
+    "if (" ^ string_of_expr e ^ ")\n" ^ part1
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

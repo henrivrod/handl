@@ -95,16 +95,12 @@ stmt_list:
 stmt_rule:
   expr_rule SEMI                                                        { Expr $1          }
   | LBRACE stmt_list RBRACE                                        { Block $2         }
-  | IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt        { If ($3, $6, $8)  }
+  | IF LPAREN expr_rule RPAREN stmt_rule ELSE stmt_rule        { IfElse ($3, $5, $7)  }
+  | IF LPAREN expr_rule RPAREN stmt_rule                       { If ($3, $5)}
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
   | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
   | FOR LPAREN expr_rule SEMI expr_rule SEMI expr_rule RPAREN stmt_rule  { For($3, $5, $7, $9) }
   | RETURN expr_rule SEMI                        { Return $2      }
-
-else_stmt:
-                                                                        { NoElse           }
-  | ELSE LBRACE stmt_rule RBRACE                              { Else $3          }
-  | ELSE IF LPAREN expr_rule RPAREN LBRACE stmt_rule RBRACE else_stmt   { ElseIf($4,$7,$9) }
 
 expr_rule:
   | BLIT                                        { BoolLit $1            }
