@@ -18,6 +18,7 @@ and sx =
   | SArrAccess of string * sexpr
   | SNoteAssign of string * sexpr * sexpr
   | SPhraseAssign of string
+  | SPhraseAdd of string * sexpr
   | SSongAssign of string
   | SCall of string * sexpr list
  
@@ -62,6 +63,7 @@ let rec string_of_sexpr (t, e) =
   | SArrAccess(s,e) -> s ^ "[" ^ string_of_sexpr e ^ "]"
   | SNoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_sexpr pitch ^ ", " ^ string_of_sexpr duration ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
+  | SPhraseAdd(id, note) -> id ^ ".add(" ^ string_of_sexpr note ^ ")"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
   | SCall(f, el) ->
             f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"

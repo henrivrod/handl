@@ -19,6 +19,7 @@ type expr =
   | ArrAccess of string * expr
   | NoteAssign of string * expr * expr
   | PhraseAssign of string
+  | PhraseAdd of string * expr
   | SongAssign of string
   | Call of string * expr list
 
@@ -92,6 +93,7 @@ let rec string_of_expr = function
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_expr pitch ^ ", " ^ string_of_expr duration ^ ")"
   | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
+  | PhraseAdd(id, note) -> id ^ ".add(" ^ string_of_expr note ^ ")"
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
