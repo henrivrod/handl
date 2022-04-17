@@ -69,6 +69,10 @@ let check (globals, functions) =
       if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
 
+    let check_note_assign lvaluet e1t e2t err = 
+      if e1t = PrimitiveType(String) && e2t = PrimitiveType(Float) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
+    in
+
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
         StringMap.empty (globals @ func.formals @ func.locals )
@@ -122,6 +126,13 @@ let check (globals, functions) =
           in
           (t, SBinop((t1, e1'), op, (t2, e2')))
         else raise (Failure err)
+      | NoteAssign(var, e1, e2) as ex -> 
+        let lt = type_of_identifier var in
+        let (e1_type, e1') as sexpr1 = check_expr e1 in
+        let (e2_type, e2') as sexpr2 = check_expr e2 in
+        let err = "illegal assignment " ^ string_of_expr ex
+        in ((check_note_assign lt e1_type e2_type err), SNoteAssign(var, sexpr1, sexpr2))
+
       (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
