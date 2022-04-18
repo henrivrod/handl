@@ -82,6 +82,10 @@ let check (globals, functions) =
       if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
 
+    let check_song_time_signature lvaluet e1t err = 
+      if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
+    in
+
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
         StringMap.empty (globals @ func.formals @ func.locals )
@@ -150,8 +154,13 @@ let check (globals, functions) =
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
-        in ((check_phrase_add lt e1_type err), SSongTempo(var, sexpr1))
-      
+        in ((check_song_tempo lt e1_type err), SSongTempo(var, sexpr1))
+      | SongTimeSignature(var, e1) as ex ->
+        let lt = type_of_identifier var in
+        let (e1_type, e1') as sexpr1 = check_expr e1 in
+        let err = "illegal assignment " ^ string_of_expr ex
+        in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
+    
       (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->

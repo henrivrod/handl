@@ -23,6 +23,7 @@ type expr =
   | SongAssign of string
   | Call of string * expr list
   | SongTempo of string * expr
+  | SongTimeSignature of string * expr
 
 type stmt =
   | Block of stmt list
@@ -99,6 +100,7 @@ let rec string_of_expr = function
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value
+  | SongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_expr value
 
 and string_of_arr l =
    if List.length l = 0 then "" else

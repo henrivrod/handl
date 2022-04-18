@@ -135,6 +135,7 @@ expr_rule:
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ADDNOTE LPAREN expr_rule RPAREN            { PhraseAdd($1, $4)     }
   | ID TEMPO ASSIGN expr_rule                          {SongTempo($1, $4)}
+  | ID TIMESIGNATURE ASSIGN expr_rule                          {SongTimeSignature($1, $4)}
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
   | ID LPAREN array_opt RPAREN { Call ($1, $3)  }
 

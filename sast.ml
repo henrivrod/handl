@@ -22,6 +22,7 @@ and sx =
   | SSongAssign of string
   | SCall of string * sexpr list
   | SSongTempo of string * sexpr
+  | SSongTimeSignature of string * sexpr
  
 
 type sstmt =
@@ -67,6 +68,7 @@ let rec string_of_sexpr (t, e) =
   | SPhraseAdd(id, note) -> id ^ ".add(" ^ string_of_sexpr note ^ ")"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
   | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
+  | SSongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_sexpr value
   | SCall(f, el) ->
             f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
       ) ^ ")"
