@@ -96,7 +96,7 @@ let check (globals, functions) =
       let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
-      | ArrayType(a) -> raise (Failure ("bad type"))
+      | ArrayType(a) -> ArrayType(a)
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
@@ -107,7 +107,12 @@ let check (globals, functions) =
       | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
       | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
-      (*need to add arraylit*)
+      | ArrLit(a) ->
+        let first = fst (check_expr (List.hd a)) in
+        let err = "Array element incompatible" in
+        let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
+            else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
+        in (ArrayType(first), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
@@ -160,8 +165,9 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
+
     
-      (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
+      (*Need to add ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
         let fd = find_func fname in
