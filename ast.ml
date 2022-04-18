@@ -22,6 +22,7 @@ type expr =
   | PhraseAdd of string * expr
   | SongAssign of string
   | Call of string * expr list
+  | SongTempo of string * expr
 
 type stmt =
   | Block of stmt list
@@ -97,6 +98,8 @@ let rec string_of_expr = function
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value
+
 and string_of_arr l =
    if List.length l = 0 then "" else
    if List.length l > 1 then string_of_expr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_expr (List.hd l)
