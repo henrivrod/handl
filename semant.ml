@@ -73,7 +73,6 @@ let check (globals, functions) =
       if e1t = PrimitiveType(String) && e2t = PrimitiveType(Float) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
     in
 
-
     let check_phrase_add lvaluet e1t err = 
       if e1t = PrimitiveType(Note) && lvaluet = PhraseType then lvaluet else raise (Failure(err))
     in
@@ -165,8 +164,15 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
-
-    
+      | ArrAssign(s, e1, e2) ->
+        let se1 = check_expr e1 in
+        let se2 = check_expr e2 in
+        if type_of_identifier s <> ArrayType(fst se2)
+         then raise (Failure (string_of_expr(e2) ^ "is type " ^ string_of_typ(fst se2) ^
+         " and cannot be added to array " ^ s ^ " of type " ^ string_of_typ(type_of_identifier s)))
+        else if fst se1 <> PrimitiveType(Int)
+         then raise (Failure (string_of_expr(e1) ^ " is not an int and can't be used as an index"))
+        else (fst se2, SArrAssign(s,se1,se2)) (*should return value of e2*)
       (*Need to add ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
