@@ -73,7 +73,6 @@ let check (globals, functions) =
       if e1t = PrimitiveType(String) && e2t = PrimitiveType(Float) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
     in
 
-
     let check_phrase_add lvaluet e1t err = 
       if e1t = PrimitiveType(Note) && lvaluet = PhraseType then lvaluet else raise (Failure(err))
     in
@@ -96,8 +95,7 @@ let check (globals, functions) =
       let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
-      | ArrayType(a) -> raise (Failure ("bad type"))
-      | _ -> raise (Failure ("found type"))
+      | ArrayType(a) -> ArrayType(a)
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
@@ -108,7 +106,12 @@ let check (globals, functions) =
       | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
       | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
-      (*need to add arraylit*)
+      | ArrLit(a) ->
+        let first = fst (check_expr (List.hd a)) in
+        let err = "Array element incompatible" in
+        let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
+            else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
+        in (ArrayType(first), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
@@ -161,23 +164,37 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
-      
-      (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
-      (*Need to fix call
       | Call(fname, args) as call ->
-        let fd = find_func fname in
-        let param_length = List.length fd.formals in
-        if List.length args != param_length then
-          raise (Failure ("expecting " ^ string_of_int param_length ^
-                          " arguments in " ^ string_of_expr call))
-        else let check_call (ft, _) e =
-               let (et, e') = check_expr e in
-               let err = "illegal argument found " ^ string_of_expr e
-               in (check_assign ft et err, e')
-          in
-          let args' = List.map2 check_call fd.formals args
-          in (fd.rtyp, SCall(fname, args')))
-      *)
+          let fd = find_func fname in
+          let param_length = List.length fd.formals in
+          if List.length args != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr call))
+          else let check_call (ft, _) e =
+                 let (et, e') = check_expr e in
+                 let err = "illegal argument found " ^ string_of_expr e
+                 in (check_assign ft et err, e')
+            in
+            let args' = List.map2 check_call fd.formals args
+            in (fd.rtyp, SCall(fname, args'))
+      | ArrAssign(s, e1, e2) ->
+        let se1 = check_expr e1 in
+        let se2 = check_expr e2 in
+        if type_of_identifier s <> ArrayType(fst se2)
+         then raise (Failure (string_of_expr(e2) ^ "is type " ^ string_of_typ(fst se2) ^
+         " and cannot be added to array " ^ s ^ " of type " ^ string_of_typ(type_of_identifier s)))
+        else if fst se1 <> PrimitiveType(Int)
+         then raise (Failure (string_of_expr(e1) ^ " is not an int and can't be used as an index"))
+        else (fst se2, SArrAssign(s,se1,se2)) (*should return value of e2*)
+      | ArrAccess(s,e) ->
+        let t = type_of_identifier s in
+        let se = check_expr e in
+        if fst se <> PrimitiveType(Int)
+            then raise (Failure (string_of_expr(e) ^ " is not an int and can't be used as an index"))
+        else match t with
+          ArrayType(a) -> (a, SArrAccess(s,se))
+          | _ -> raise (Failure (s ^ " is not an Array"))
+      (*Need to add NoteAssign, PhraseAssign, SongAssign*)
     in
 
     let check_bool_expr e =
@@ -197,8 +214,8 @@ let check (globals, functions) =
          follows any Return statement.  Nested blocks are flattened. *)
         Block sl -> SBlock (check_stmt_list sl)
       | Expr e -> SExpr (check_expr e)
-      (*| If(e, s, el) ->
-        SIf(check_bool_expr e, check_stmt s, check_else el)*)
+      | IfElse(e, s1, s2) -> SIfElse(check_bool_expr e, check_stmt s1, check_stmt s2)
+      | If(e, s) -> SIf(check_bool_expr e, check_stmt s)
       | While(e, st) ->
         SWhile(check_bool_expr e, check_stmt st)
       (*Need to add For and ForMeasure*)
