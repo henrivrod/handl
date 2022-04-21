@@ -173,7 +173,15 @@ let check (globals, functions) =
         else if fst se1 <> PrimitiveType(Int)
          then raise (Failure (string_of_expr(e1) ^ " is not an int and can't be used as an index"))
         else (fst se2, SArrAssign(s,se1,se2)) (*should return value of e2*)
-      (*Need to add ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
+      | ArrAccess(s,e) ->
+        let t = type_of_identifier s in
+        let se = check_expr e in
+        if fst se <> PrimitiveType(Int)
+            then raise (Failure (string_of_expr(e) ^ " is not an int and can't be used as an index"))
+        else match t with
+          ArrayType(a) -> (a, SArrAccess(s,se))
+          | _ -> raise (Failure (s ^ " is not an Array"))
+      (*Need to add ArrSet, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
         let fd = find_func fname in
