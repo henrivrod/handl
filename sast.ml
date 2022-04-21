@@ -28,7 +28,8 @@ and sx =
 type sstmt =
     SBlock of sstmt list
   | SExpr of sexpr
-  (*| SIf of sexpr * sstmt * sels*)
+  | SIfElse of sexpr * sstmt * sstmt
+  | SIf of sexpr * sstmt
   | SWhile of sexpr * sstmt
   | SForMeasure of int * int * sexpr * sstmt
   | SFor of sexpr * sexpr * sexpr * sstmt
@@ -80,11 +81,36 @@ let rec string_of_sstmt = function
     SBlock(stmts) -> "{\n" ^ String.concat "" (List.map string_of_sstmt stmts) ^ "}\n"
   | SExpr(expr) -> string_of_sexpr expr ^ ";\n";
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ ";\n"
-  (*| SIf(e, s, el) ->  "if (" ^ string_of_sexpr e ^ ") {\n" ^
-                        string_of_sstmt s ^ "}" ^ string_of_else el*)
+  | SIfElse(e, s1, s2) ->  string_of_sif_else(e,s1,s2)
+  | SIf(e, s) -> string_of_sif(e,s)
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
   | SForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
   | SFor(e1, e2, e3, s) -> "for (" ^ string_of_sexpr e1 ^ "; " ^ string_of_sexpr e2 ^ "; " ^ string_of_sexpr e3 ^ "; " ^ string_of_sstmt s
+and string_of_sif_else (e, s1, s2)=
+    let part1 =
+        match s1 with
+            SExpr(expr)-> string_of_sstmt s1
+            | SBlock(stmts)->string_of_sstmt(s1)
+            | _ -> failwith "Error"
+    in
+    let part2 =
+        match s2 with
+            SExpr(expr)-> "\n" ^ string_of_sstmt s2
+            | SBlock(stmts)->"\n" ^ string_of_sstmt(s2)
+            | SIfElse(e2,s3,s4)->string_of_sstmt(s2)
+            | SIf(e2,s) ->string_of_sstmt(s2)
+            | _ -> failwith "Error"
+    in
+    "if (" ^ string_of_sexpr e ^ ")\n" ^
+        part1 ^  "else " ^ part2
+and string_of_sif (e, s)=
+    let part1 =
+        match s with
+            SExpr(expr)-> string_of_sstmt s
+            | SBlock(stmts)->string_of_sstmt(s)
+            | _ -> failwith "Error"
+    in
+    "if (" ^ string_of_sexpr e ^ ")\n" ^ part1
 
 let string_of_sfdecl fdecl =
   string_of_typ fdecl.srtyp ^ " " ^

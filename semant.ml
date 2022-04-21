@@ -181,7 +181,7 @@ let check (globals, functions) =
         else match t with
           ArrayType(a) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
-      (*Need to add ArrSet, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
+      (*Need to add ArrSet, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
         let fd = find_func fname in
@@ -216,8 +216,8 @@ let check (globals, functions) =
          follows any Return statement.  Nested blocks are flattened. *)
         Block sl -> SBlock (check_stmt_list sl)
       | Expr e -> SExpr (check_expr e)
-      (*| If(e, s, el) ->
-        SIf(check_bool_expr e, check_stmt s, check_else el)*)
+      | IfElse(e, s1, s2) -> SIfElse(check_bool_expr e, check_stmt s1, check_stmt s2)
+      | If(e, s) -> SIf(check_bool_expr e, check_stmt s)
       | While(e, st) ->
         SWhile(check_bool_expr e, check_stmt st)
       (*Need to add For and ForMeasure*)
