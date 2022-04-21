@@ -194,7 +194,7 @@ let check (globals, functions) =
         else match t with
           ArrayType(a) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
-      (*Need to add ArrSet, NoteAssign, PhraseAssign, SongAssign*)
+      (*Need to add NoteAssign, PhraseAssign, SongAssign*)
     in
 
     let check_bool_expr e =
