@@ -19,9 +19,11 @@ and sx =
   | SNoteAssign of string * sexpr * sexpr
   | SPhraseAssign of string
   | SPhraseAdd of string * sexpr
+  | SSongMeasure of string * sexpr
   | SSongAssign of string
   | SCall of string * sexpr list
   | SSongTempo of string * sexpr
+  | SSongBars of string * sexpr
   | SSongTimeSignature of string * sexpr
  
 
@@ -67,8 +69,10 @@ let rec string_of_sexpr (t, e) =
   | SNoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_sexpr pitch ^ ", " ^ string_of_sexpr duration ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SPhraseAdd(id, note) -> id ^ ".add(" ^ string_of_sexpr note ^ ")"
+  | SSongMeasure(id, value) -> id ^ ".measure(" ^ string_of_sexpr value ^ ")"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
   | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
+  | SSongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_sexpr value
   | SSongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_sexpr value
   | SCall(f, el) ->
             f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"

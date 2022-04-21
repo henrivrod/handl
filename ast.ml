@@ -20,10 +20,13 @@ type expr =
   | NoteAssign of string * expr * expr
   | PhraseAssign of string
   | PhraseAdd of string * expr
+  | SongMeasure of string * expr
   | SongAssign of string
   | Call of string * expr list
   | SongTempo of string * expr
+  | SongBars of string * expr
   | SongTimeSignature of string * expr
+ 
 
 type stmt =
   | Block of stmt list
@@ -96,10 +99,12 @@ let rec string_of_expr = function
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_expr pitch ^ ", " ^ string_of_expr duration ^ ")"
   | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | PhraseAdd(id, note) -> id ^ ".add(" ^ string_of_expr note ^ ")"
+  | SongMeasure(id, value) -> id ^ ".measure(" ^ string_of_expr value ^ ")"
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value
+  | SongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_expr value
   | SongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_expr value
 
 and string_of_arr l =

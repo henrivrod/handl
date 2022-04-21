@@ -81,6 +81,10 @@ let check (globals, functions) =
       if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
 
+    let check_song_bars lvaluet e1t err = 
+      if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
+    in
+
     let check_song_time_signature lvaluet e1t err = 
       if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
@@ -159,6 +163,11 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_tempo lt e1_type err), SSongTempo(var, sexpr1))
+      | SongBars(var, e1) as ex ->
+          let lt = type_of_identifier var in
+          let (e1_type, e1') as sexpr1 = check_expr e1 in
+          let err = "illegal assignment " ^ string_of_expr ex
+          in ((check_song_bars lt e1_type err), SSongBars(var, sexpr1))
       | SongTimeSignature(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
@@ -194,7 +203,7 @@ let check (globals, functions) =
         else match t with
           ArrayType(a) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
-      (*Need to add NoteAssign, PhraseAssign, SongAssign*)
+      (*Need to add NoteAssign, PhraseAssign, SongAssign, Song Measure*)
     in
 
     let check_bool_expr e =

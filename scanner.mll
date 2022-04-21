@@ -49,6 +49,8 @@ rule token = parse
 | "Phrase" { PHRASE }
 | ".add" { ADDNOTE }
 | ".tempo" { TEMPO }
+| ".bars" { BARS }
+| ".measure" { MEASURE }
 | ".timeSignature" { TIMESIGNATURE }
 | "Song" { PHRASE }
 | "measure" { MEASURE }

@@ -10,8 +10,8 @@ open Ast
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
 %token FOR MEASURE THROUGH IN
 %token RETURN COMMA ARRAY PHRASE SONG
-%token ADDNOTE
-%token TIMESIGNATURE TEMPO BARS
+%token ADDNOTE MEASURE
+%token TIMESIGNATURE TEMPO BARS 
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
@@ -134,7 +134,9 @@ expr_rule:
   | NOTE ID ASSIGN NOTE LPAREN expr_rule COMMA expr_rule RPAREN           { NoteAssign($2, $6, $8) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ADDNOTE LPAREN expr_rule RPAREN            { PhraseAdd($1, $4)     }
+  | ID MEASURE LPAREN expr_rule RPAREN            { SongMeasure($1, $4)     }
   | ID TEMPO ASSIGN expr_rule                          {SongTempo($1, $4)}
+  | ID BARS ASSIGN expr_rule                          {SongBars($1, $4)}
   | ID TIMESIGNATURE ASSIGN expr_rule                          {SongTimeSignature($1, $4)}
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
   | ID LPAREN array_opt RPAREN { Call ($1, $3)  }
