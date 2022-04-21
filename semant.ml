@@ -97,6 +97,7 @@ let check (globals, functions) =
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
       | ArrayType(a) -> raise (Failure ("bad type"))
+      | _ -> raise (Failure ("found type"))
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
@@ -160,7 +161,7 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
-    
+      
       (*Need to add Assign, ArrAssign, ArrAccess, NoteAssign, PhraseAssign, SongAssign*)
       (*Need to fix call
       | Call(fname, args) as call ->
