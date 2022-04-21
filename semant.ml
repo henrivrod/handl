@@ -164,6 +164,19 @@ let check (globals, functions) =
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
+      | Call(fname, args) as call ->
+          let fd = find_func fname in
+          let param_length = List.length fd.formals in
+          if List.length args != param_length then
+            raise (Failure ("expecting " ^ string_of_int param_length ^
+                            " arguments in " ^ string_of_expr call))
+          else let check_call (ft, _) e =
+                 let (et, e') = check_expr e in
+                 let err = "illegal argument found " ^ string_of_expr e
+                 in (check_assign ft et err, e')
+            in
+            let args' = List.map2 check_call fd.formals args
+            in (fd.rtyp, SCall(fname, args'))
       | ArrAssign(s, e1, e2) ->
         let se1 = check_expr e1 in
         let se2 = check_expr e2 in
@@ -182,21 +195,6 @@ let check (globals, functions) =
           ArrayType(a) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
       (*Need to add ArrSet, NoteAssign, PhraseAssign, SongAssign*)
-      (*Need to fix call
-      | Call(fname, args) as call ->
-        let fd = find_func fname in
-        let param_length = List.length fd.formals in
-        if List.length args != param_length then
-          raise (Failure ("expecting " ^ string_of_int param_length ^
-                          " arguments in " ^ string_of_expr call))
-        else let check_call (ft, _) e =
-               let (et, e') = check_expr e in
-               let err = "illegal argument found " ^ string_of_expr e
-               in (check_assign ft et err, e')
-          in
-          let args' = List.map2 check_call fd.formals args
-          in (fd.rtyp, SCall(fname, args')))
-      *)
     in
 
     let check_bool_expr e =
