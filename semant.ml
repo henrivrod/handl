@@ -203,7 +203,7 @@ let check (globals, functions) =
         else match t with
           ArrayType(a) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
-      (*Need to add NoteAssign, PhraseAssign, SongAssign, Song Measure*)
+      (*Need to add PhraseAssign, SongAssign, Song Measure*)
     in
 
     let check_bool_expr e =
@@ -227,7 +227,8 @@ let check (globals, functions) =
       | If(e, s) -> SIf(check_bool_expr e, check_stmt s)
       | While(e, st) ->
         SWhile(check_bool_expr e, check_stmt st)
-      (*Need to add For and ForMeasure*)
+      | For(e1, e2, e3, s1) -> SFor(check_expr e1, check_expr e2, check_expr e3, check_stmt s1)
+      | ForMeasure(i1, i2, e1, s1) -> SForMeasure(i1, i2, check_expr e1, check_stmt s1)
       | Return e ->
         let (t, e') = check_expr e in
         if t = func.rtyp then SReturn (t, e')
