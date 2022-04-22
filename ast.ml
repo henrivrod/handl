@@ -2,7 +2,7 @@ type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | 
 
 type prim = Int | Bool | Float | Char| String | Note
 
-type typ = PrimitiveType of prim | ArrayType of typ | PhraseType | SongType
+type typ = PrimitiveType of prim | ArrayType of typ * int list | PhraseType | SongType
 
 type expr =
   | Literal of int
@@ -77,7 +77,7 @@ let string_of_prim = function
 
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
-  | ArrayType(t) -> "Array <" ^ string_of_typ t ^ ">"
+  | ArrayType(t, s) -> "Array <" ^ string_of_typ t ^ ">" ^ String.concat "" (List.map (fun x -> "["^ string_of_int x ^"]") s)
   | _ -> failwith "Error"
 
 let rec string_of_expr = function

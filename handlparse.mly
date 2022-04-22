@@ -62,7 +62,14 @@ primitive_typ:
   | STRING                  { String }
 
 array_typ_rule:
-  ARRAY LT typ_rule GT      { ArrayType($3) }
+  ARRAY LT typ_rule GT array_size_list      { ArrayType($3,$5) }
+
+array_size_list:
+  array_size {[$1]}
+  | array_size array_size_list {$1::$2}
+
+array_size:
+  LBRACK LITERAL RBRACK {$2}
 
 handl_typ_rule:
   PHRASE                    { PhraseType }
