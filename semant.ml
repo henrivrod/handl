@@ -99,7 +99,7 @@ let check (globals, functions) =
       let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
-      | ArrayType(a) -> ArrayType(a)
+      | PrimArray(t,l) -> PrimArray(t,l)
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
@@ -115,7 +115,7 @@ let check (globals, functions) =
         let err = "Array element incompatible" in
         let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
             else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
-        in (ArrayType(first), SArrLit(newA))
+        in (PrimArray(first, List.length newA), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
@@ -189,7 +189,11 @@ let check (globals, functions) =
       | ArrAssign(s, e1, e2) ->
         let se1 = check_expr e1 in
         let se2 = check_expr e2 in
-        if type_of_identifier s <> ArrayType(fst se2)
+        let (ts,ls) = match type_of_identifier s with
+            PrimArray(ty,le) -> (ty,le)
+            | _ -> raise (Failure (s ^ "is not an array"))
+        in
+        if ts <> fst se2
          then raise (Failure (string_of_expr(e2) ^ "is type " ^ string_of_typ(fst se2) ^
          " and cannot be added to array " ^ s ^ " of type " ^ string_of_typ(type_of_identifier s)))
         else if fst se1 <> PrimitiveType(Int)
@@ -201,7 +205,7 @@ let check (globals, functions) =
         if fst se <> PrimitiveType(Int)
             then raise (Failure (string_of_expr(e) ^ " is not an int and can't be used as an index"))
         else match t with
-          ArrayType(a) -> (a, SArrAccess(s,se))
+          PrimArray(a,size) -> (a, SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
       (*Need to add PhraseAssign, SongAssign, Song Measure*)
     in

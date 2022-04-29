@@ -52,7 +52,7 @@ vdecl:
 
 typ_rule:
   primitive_typ             { PrimitiveType($1) }
-  | array_typ_rule          { $1                }
+  | ARRAY LT typ_rule GT LBRACK LITERAL RBRACK      { PrimArray($3,$6) }
   | handl_typ_rule          { $1                }
 primitive_typ:
   INT                       { Int  }
@@ -60,16 +60,6 @@ primitive_typ:
   | FLOAT                   { Float }
   | CHAR                    { Char }
   | STRING                  { String }
-
-array_typ_rule:
-  ARRAY LT typ_rule GT array_size_list      { ArrayType($3,$5) }
-
-array_size_list:
-  array_size {[$1]}
-  | array_size array_size_list {$1::$2}
-
-array_size:
-  LBRACK LITERAL RBRACK {$2}
 
 handl_typ_rule:
   PHRASE                    { PhraseType }
