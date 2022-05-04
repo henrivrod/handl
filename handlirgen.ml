@@ -35,14 +35,18 @@ let translate (globals, functions) =
   let named struct_note_t = L.named_struct_type context
   "named_struct_note_t" in
 
-  (* Return the LLVM type for a Handl type *)
-  let ltype_of_typ = function
+  (* Return the LLVM type for a primitive Handl type *)
+  let ltype_of_primitive_typ = function
       A.PrimitiveType(A.Int)   -> i32_t
     | A.PrimitiveType(A.Bool)  -> i1_t
     | A.PrimitiveType(A.Float)  -> float_t
     | A.PrimitiveType(A.Char)  -> i1_t
     | A.PrimitiveType(A.String)  -> str_t
     | A.PrimitiveType(A.Note)  -> named_struct_note_t
+  in
+  (* Return the LLVM type for all Handl types *)
+  let ltype_of_typ = function
+      A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
   in
 
   (* Create a map of global variables after creating each *)
