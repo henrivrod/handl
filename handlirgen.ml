@@ -29,12 +29,20 @@ let translate (globals, functions) =
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
-  and i1_t       = L.i1_type     context in
+  and i1_t       = L.i1_type     context
+  and float_t    = L.double_type context in
+  let str_t      = L.pointer_type i8_t in
+  let named struct_note_t = L.named_struct_type context
+  "named_struct_note_t" in
 
-  (* Return the LLVM type for a MicroC type *)
+  (* Return the LLVM type for a Handl type *)
   let ltype_of_typ = function
-      A.Int   -> i32_t
-    | A.Bool  -> i1_t
+      A.PrimitiveType(A.Int)   -> i32_t
+    | A.PrimitiveType(A.Bool)  -> i1_t
+    | A.PrimitiveType(A.Float)  -> float_t
+    | A.PrimitiveType(A.Char)  -> i1_t
+    | A.PrimitiveType(A.String)  -> str_t
+    | A.PrimitiveType(A.Note)  -> named_struct_note_t
   in
 
   (* Create a map of global variables after creating each *)
