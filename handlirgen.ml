@@ -83,9 +83,9 @@ let translate (globals, functions) =
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder 
     and bool_format_str = L.build_global_stringptr "%B\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
-    and chr_format_str = L.build_gloval_stringptr "%c\n" "fmt" builder 
+    and chr_format_str = L.build_global_stringptr "%c\n" "fmt" builder 
     and str_format_str = L.build_global_stringptr "%s\n" "fmt" builder
-    and note_format_str = L.build_gloval_stringptr "/%s/ /%g/\n" "fmt" builder
+    and note_format_str = L.build_global_stringptr "/%s/ /%g/\n" "fmt" builder
   in 
 
     (* Construct the function's "locals": formal arguments and locally
@@ -118,8 +118,11 @@ let translate (globals, functions) =
 
     (* Construct code for an expression; return its value *)
     let rec build_expr builder ((_, e) : sexpr) = match e with
-        SLiteral i  -> L.const_int i32_t i
+        SLiteral i  -> L.const_int i32_t i  
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
+      | SFloatLit f -> L.const_float_of_string float_t f
+      | SChrLit l -> L.const_char_of_string i8_t l
+      | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
