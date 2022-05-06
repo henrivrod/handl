@@ -40,9 +40,10 @@ let translate (globals, functions) =
       A.PrimitiveType(A.Int)   -> i32_t
     | A.PrimitiveType(A.Bool)  -> i1_t
     | A.PrimitiveType(A.Float)  -> float_t
-    | A.PrimitiveType(A.Char)  -> i1_t
+    | A.PrimitiveType(A.Char)  -> i8_t
     | A.PrimitiveType(A.String)  -> str_t
     | A.PrimitiveType(A.Note)  -> named_struct_note_t
+    | _                        -> raise (Failure "Unmatched type in ltype_of_typ")
   in
   (* Return the LLVM type for all Handl types *)
   let ltype_of_typ = function
@@ -52,7 +53,9 @@ let translate (globals, functions) =
   (* Create a map of global variables after creating each *)
   let global_vars : L.llvalue StringMap.t =
     let global_var m (t, n) =
-      let init = L.const_int (ltype_of_typ t) 0
+      let init = match t with 
+          A.PrimitiveType(A.Float) -> L.const_float (ltype_of_primitive_typ t) 0.0
+          | _ L.const_int (ltype_of_typ t) 0
       in StringMap.add n (L.define_global n init the_module) m in
     List.fold_left global_var StringMap.empty globals in
 
@@ -77,7 +80,13 @@ let translate (globals, functions) =
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
-    let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
+    let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder 
+    and bool_format_str = L.build_global_stringptr "%B\n" "fmt" builder
+    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
+    and chr_format_str = L.build_gloval_stringptr "%c\n" "fmt" builder 
+    and str_format_str = L.build_global_stringptr "%s\n" "fmt" builder
+    and note_format_str = L.build_gloval_stringptr "/%s/ /%g/\n" "fmt" builder
+  in 
 
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
