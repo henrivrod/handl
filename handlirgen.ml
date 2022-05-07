@@ -34,6 +34,8 @@ let translate (globals, functions) =
   let str_t      = L.pointer_type i8_t in
   let named struct_note_t = L.named_struct_type context
   "named_struct_note_t" in
+  ignore (L.struct_set_body named_struct_note_t [| L.pointer_type i8_t; L.i32_type context|] false);
+  (* Note is a struct of a string representing pitch and int representing strength of the note *)
 
   (* Return the LLVM type for a primitive Handl type *)
   let ltype_of_primitive_typ = function
