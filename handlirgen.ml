@@ -128,6 +128,9 @@ let translate (globals, functions) =
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
+      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
+        let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
+        ignore(L.build_store noteLit (lookup n) builder); noteLit
       | SBinop (e1, op, e2) ->
         let e1' = build_expr builder e1
         and e2' = build_expr builder e2 in
