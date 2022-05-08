@@ -169,6 +169,16 @@ let translate (globals, functions) =
       | SNewArr (t, e) -> let len = build_expr builder e
                                   in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
       | SArrLit (a) ->
+          let array_ptr = make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
+          in let llname = "array_name" ^ "[" ^ L.string_of_llvalue idx ^ "]" in
+          let arr_ptr_load = L.build_load array_ptr arr_name builder
+          in let create index element=
+            assign_val = (build_expr builder element) in
+            let arr_gep = L.build_in_bounds_gep arr_ptr_load [|index|] llname builder in
+            let build = L.build_store assign_val arr_gep builder in
+            index+1
+          in let length = List.fold_left create 0 a in
+          array_ptr
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
