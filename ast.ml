@@ -2,7 +2,7 @@ type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | 
 
 type prim = Int | Bool | Float | Char| String | Note
 
-type typ = PrimitiveType of prim | PrimArray of typ * int | PhraseType | SongType
+type typ = PrimitiveType of prim | PrimArray of prim | PhraseType | SongType
 
 type expr =
   | Literal of int
@@ -10,6 +10,7 @@ type expr =
   | FloatLit of float
   | ChrLit of char
   | StrLit of string
+  | NewArr of prim * int
   | ArrLit of expr list
   | Id of string
   | Not of expr
@@ -77,9 +78,7 @@ let string_of_prim = function
 
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
-  | PrimArray(t, s) -> match t with
-        PrimitiveType(x) -> "Array <" ^ string_of_prim x ^ ">" ^  "["^ string_of_int s ^"]"
-        | _ -> failwith "Array on non-primitive type"
+  | PrimArray(t) ->  "Array <" ^ string_of_prim t ^ ">"
   | _ -> failwith "Error"
 
 let rec string_of_expr = function
@@ -89,6 +88,7 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | StrLit(l) -> "\"" ^ l ^ "\""
+  | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_int l ^ "]"
   | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e

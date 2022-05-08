@@ -50,6 +50,7 @@ let translate (globals, functions) =
   (* Return the LLVM type for all Handl types *)
   let ltype_of_typ = function
       A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
+      | A.ArrayType(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
   in
 
   (* Create a map of global variables after creating each *)
@@ -118,6 +119,46 @@ let translate (globals, functions) =
       with Not_found -> StringMap.find n global_vars
     in
 
+    let elem_size_offset = L.const_int i32_t (-3)
+    and size_offset = L.const_int i32_t (-2)
+    and len_offset = L.const_int i32_t (-1)
+    and metadata_sz = L.const_int i32_t 12 in  (* 12 bytes overhead *)
+
+    let put_meta body_ptr offset llval builder =
+      let ptr = L.build_bitcast body_ptr i32_ptr_t "i32_ptr_t" builder in
+      let meta_ptr = L.build_gep ptr [| offset |] "meta_ptr" builder in
+      L.build_store llval meta_ptr builder
+    in
+
+    let get_meta body_ptr offset builder =
+      let ptr = L.build_bitcast body_ptr i32_ptr_t "i32_ptr_t" builder in
+      let meta_ptr = L.build_gep ptr [| offset |] "meta_ptr" builder in
+      L.build_load meta_ptr "meta_data" builder
+    in
+
+    let meta_to_body meta_ptr builder =
+      let ptr = L.build_bitcast meta_ptr i8_ptr_t "meta_ptr" builder in
+      L.build_gep ptr [| (L.const_int i8_t (12)) |] "body_ptr" builder
+    in
+
+    let body_to_meta body_ptr builder =
+      let ptr = L.build_bitcast body_ptr i8_ptr_t "body_ptr" builder in
+      L.build_gep ptr [| (L.const_int i8_t (-12)) |] "meta_ptr" builder
+    in
+
+    (* make array *)
+    let make_array element_t len builder =
+      let element_sz = L.build_bitcast (L.size_of element_t) i32_t "b" builder in
+      let body_sz = L.build_mul element_sz len "body_sz" builder in
+      let malloc_sz = L.build_add body_sz metadata_sz "make_array_sz" builder in
+      let meta_ptr = L.build_array_malloc i8_t malloc_sz "make_array" builder in
+      let body_ptr = meta_to_body meta_ptr builder in
+      ignore (put_meta body_ptr elem_size_offset element_sz builder);
+      ignore (put_meta body_ptr size_offset malloc_sz builder);
+      ignore (put_meta body_ptr len_offset len builder);
+      L.build_bitcast body_ptr (L.pointer_type element_t) "make_array_ptr" builder
+    in
+
     (* Construct code for an expression; return its value *)
     let rec build_expr builder ((_, e) : sexpr) = match e with
         SLiteral i  -> L.const_int i32_t i  
@@ -125,6 +166,9 @@ let translate (globals, functions) =
       | SFloatLit f -> L.const_float_of_string float_t f
       | SChrLit l -> L.const_char_of_string i8_t l
       | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
+      | SNewArr (t, e) -> let len = build_expr builder e
+                                  in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
+      | SArrLit (a) ->
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
@@ -143,6 +187,22 @@ let translate (globals, functions) =
          | A.Neq     -> L.build_icmp L.Icmp.Ne
          | A.Less    -> L.build_icmp L.Icmp.Slt
         ) e1' e2' "tmp" builder
+      | SArrayAssign (arr_name, idx_expr, val_expr) ->
+        let idx = (build_expr builder idx_expr)
+        and assign_val = (build_expr builder val_expr) in
+        let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
+        let arr_ptr = lookup arr_name in
+        let arr_ptr_load = L.build_load arr_ptr arr_name builder in
+        let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
+        L.build_store assign_val arr_gep builder
+      | SArrayAccess (arr_name, idx_expr) ->
+        let idx = build_expr builder idx_expr in
+        let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
+        let arr_ptr_load =
+            let arr_ptr = lookup arr_name in
+            L.build_load arr_ptr arr_name builder in
+        let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
+          L.build_load arr_gep (llname ^ "_load") builder
       | SCall ("print", [e]) ->
         L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
           "printf" builder

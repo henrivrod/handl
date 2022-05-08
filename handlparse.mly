@@ -8,7 +8,7 @@ open Ast
 %token PLUS MINUS TIMES DIVISION MODULO POWER
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
-%token FOR MEASURE THROUGH IN
+%token FOR MEASURE THROUGH IN NEW
 %token RETURN COMMA ARRAY PHRASE SONG
 %token ADDNOTE MEASURE
 %token TIMESIGNATURE TEMPO BARS 
@@ -52,7 +52,7 @@ vdecl:
 
 typ_rule:
   primitive_typ             { PrimitiveType($1) }
-  | ARRAY LT typ_rule GT LBRACK LITERAL RBRACK      { PrimArray($3,$6) }
+  | ARRAY LT primitive_typ GT      { PrimArray($3) }
   | handl_typ_rule          { $1                }
 primitive_typ:
   INT                       { Int  }
@@ -107,6 +107,7 @@ expr_rule:
   | FLIT                                        { FloatLit $1           }
   | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
+  | NEW ARRAY LT primitive_typ GT LBRACK LITERAL RBRACK {NewArr($4,$7)}
   | LBRACK array_opt RBRACK                         { ArrLit $2             }
   | ID                                          { Id $1                 }
   | expr_rule POWER expr_rule                   { Binop ($1, Pow, $3)   }

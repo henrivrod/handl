@@ -56,6 +56,7 @@ rule token = parse
 | "measure" { MEASURE }
 | "through" { THROUGH }
 | "in" { IN }
+| "new" { NEW }
 | '"'((digit | letter)* as str)'"'  { STRLIT(str) }
 | '''((digit | letter) as chr)'''   { CHRLIT(chr) }
 | digit+ as lem  { LITERAL(int_of_string lem) }

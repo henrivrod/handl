@@ -99,7 +99,17 @@ let check (globals, functions) =
       let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
-      | PrimArray(t,l) -> PrimArray(t,l)
+      | PrimArray(t) -> PrimArray(t)
+    in
+
+    let type_of_prim p =
+      match p with
+      PrimitiveType(Int) -> Int
+      | PrimitiveType(Bool) -> Bool
+      | PrimitiveType(Float) -> Float
+      | PrimitiveType(Char) -> Char
+      | PrimitiveType(String) -> String
+      | PrimitiveType(Note) -> Note
     in
 
     (* Return a semantically-checked expression, i.e., with a type *)
@@ -110,12 +120,13 @@ let check (globals, functions) =
       | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
       | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
+      | NewArr(t,l) -> (PrimArray(t), SNewArr(t,l))
       | ArrLit(a) ->
         let first = fst (check_expr (List.hd a)) in
         let err = "Array element incompatible" in
         let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
             else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
-        in (PrimArray(first, List.length newA), SArrLit(newA))
+        in (PrimArray(type_of_prim first), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
@@ -189,11 +200,11 @@ let check (globals, functions) =
       | ArrAssign(s, e1, e2) ->
         let se1 = check_expr e1 in
         let se2 = check_expr e2 in
-        let (ts,ls) = match type_of_identifier s with
-            PrimArray(ty,le) -> (ty,le)
+        let ts = match type_of_identifier s with
+            PrimArray(ty) -> ty
             | _ -> raise (Failure (s ^ "is not an array"))
         in
-        if ts <> fst se2
+        if PrimitiveType(ts) <> fst se2
          then raise (Failure (string_of_expr(e2) ^ "is type " ^ string_of_typ(fst se2) ^
          " and cannot be added to array " ^ s ^ " of type " ^ string_of_typ(type_of_identifier s)))
         else if fst se1 <> PrimitiveType(Int)
@@ -205,7 +216,7 @@ let check (globals, functions) =
         if fst se <> PrimitiveType(Int)
             then raise (Failure (string_of_expr(e) ^ " is not an int and can't be used as an index"))
         else match t with
-          PrimArray(a,size) -> (a, SArrAccess(s,se))
+          PrimArray(a) -> (PrimitiveType(a), SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
       (*Need to add PhraseAssign, SongAssign, Song Measure*)
     in
