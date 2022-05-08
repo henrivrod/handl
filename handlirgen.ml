@@ -58,7 +58,7 @@ let translate (globals, functions) =
     let global_var m (t, n) =
       let init = match t with 
           A.PrimitiveType(A.Float) -> L.const_float (ltype_of_primitive_typ t) 0.0
-          | _ L.const_int (ltype_of_typ t) 0
+          | _ -> L.const_int (ltype_of_typ t) 0
       in StringMap.add n (L.define_global n init the_module) m in
     List.fold_left global_var StringMap.empty globals in
 
@@ -172,14 +172,14 @@ let translate (globals, functions) =
           let array_ptr = make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
           in let llname = "array_name" ^ "[" ^ L.string_of_llvalue idx ^ "]" in
           let arr_ptr_load = L.build_load array_ptr arr_name builder
-          in let create index element=
+          in let create index element =
             assign_val = (build_expr builder element) in
             let arr_gep = L.build_in_bounds_gep arr_ptr_load [|index|] llname builder in
             let build = L.build_store assign_val arr_gep builder in
             index+1
-          in let length = List.fold_left create 0 a in
-          array_ptr
-      | SId s       -> L.build_load (lookup s) s builder
+          in let length = List.fold_left create 0 a 
+          
+      | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
       | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
