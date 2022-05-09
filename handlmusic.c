@@ -44,12 +44,12 @@ int main()
     
     for(int i=0; i < LEN(s1.measures)-1; i++){
         
-            char E[] = "------------";
-            char A[] = "------------";
-            char D[] = "------------";
-            char G[] = "------------";
-            char B[] = "------------";
-            char e[] = "------------";
+            char E[] = "E|------------";
+            char A[] = "A|------------";
+            char D[] = "D|------------";
+            char G[] = "G|------------";
+            char B[] = "B|------------";
+            char e[] = "e|------------";
        
         for(int j=0; j < 4; j++){
             // printf("%s", s1.measures[i].notes[j].pitch);
@@ -58,102 +58,102 @@ int main()
             char* cur = s1.measures[i].notes[j].pitch;
             //High e string
             if(strcmp(cur,"E3")==0){
-                e[3*j + 1] = '0';
+                e[3*j + 3] = '0';
                 
             }
             else if(strcmp(cur,"F3")==0){
-                e[3*j + 1] = '1';
+                e[3*j + 3] = '1';
             }
             else if(strcmp(cur,"F#3")==0 || strcmp(cur,"Gb3")==0){
-                e[3*j + 1] = '2';
+                e[3*j + 3] = '2';
             }
             else if(strcmp(cur,"G3")==0){
-                e[3*j + 1] = '3';
+                e[3*j + 3] = '3';
             }
             else if(strcmp(cur,"G#3")==0 || strcmp(cur,"Ab3")==0){
-                e[3*j + 1] = '4';
+                e[3*j + 3] = '4';
             }
             
             //B String
             else if(strcmp(cur,"B2")==0){
-                B[3*j + 1] = '0';
+                B[3*j + 3] = '0';
             }
             else if(strcmp(cur,"C2")==0){
-                B[3*j + 1] = '1';
+                B[3*j + 3] = '1';
             }
             else if(strcmp(cur,"C#2")==0 || strcmp(cur,"Db2")==0){
-                B[3*j + 1] = '2';
+                B[3*j + 3] = '2';
             }
             else if(strcmp(cur,"D2")==0){
-                B[3*j + 1] = '3';
+                B[3*j + 3] = '3';
             }
             else if(strcmp(cur,"D#2")==0 || strcmp(cur,"Eb2")==0){
-                B[3*j + 1] = '4';
+                B[3*j + 3] = '4';
             }
             //G String
             else if(strcmp(cur,"G2")==0){
-                G[3*j + 1] = '0';
+                G[3*j + 3] = '0';
             }
             else if(strcmp(cur,"G#2")==0 || strcmp(cur,"Ab2")==0){
-                G[3*j + 1] = '1';
+                G[3*j + 3] = '1';
             }
             else if(strcmp(cur,"A2")==0 ){
-                G[3*j + 1] = '2';
+                G[3*j + 3] = '2';
             }
             else if(strcmp(cur,"A#2")==0 || strcmp(cur,"Bb2")==0){
-                G[3*j + 1] = '3';
+                G[3*j + 3] = '3';
             }
             else if(strcmp(cur,"B2")==0){
-                G[3*j + 1] = '4';
+                G[3*j + 3] = '4';
             }
             //D string
             else if(strcmp(cur,"D1")==0){
-                D[3*j + 1] = '0';
+                D[3*j + 3] = '0';
             }
             else if(strcmp(cur,"D#1")==0 || strcmp(cur,"Eb1")==0){
-                D[3*j + 1] = '1';
+                D[3*j + 3] = '1';
             }
             else if(strcmp(cur,"E2")==0 ){
-                D[3*j + 1] = '2';
+                D[3*j + 3] = '2';
             }
             else if(strcmp(cur,"F2")==0){
-                D[3*j + 1] = '3';
+                D[3*j + 3] = '3';
             }
             else if(strcmp(cur,"F#2")==0 || strcmp(cur,"Gb2")==0){
-                D[3*j + 1] = '4';
+                D[3*j + 3] = '4';
             }
             //A string
             else if(strcmp(cur,"A1")==0){
-                A[3*j + 1] = '0';
+                A[3*j + 3] = '0';
             }
             else if(strcmp(cur,"A#1")==0 || strcmp(cur,"Bb1")==0){
-                A[3*j + 1] = '1';
+                A[3*j + 3] = '1';
             }
             else if(strcmp(cur,"B1")==0 ){
-                A[3*j + 1] = '2';
+                A[3*j + 3] = '2';
             }
             else if(strcmp(cur,"C1")==0){
-                A[3*j + 1] = '3';
+                A[3*j + 3] = '3';
             }
             else if(strcmp(cur,"C#1")==0 || strcmp(cur,"Db1")==0){
-                A[3*j + 1] = '4';
+                A[3*j + 3] = '4';
             }
             //Low E string
             else if(strcmp(cur,"E1")==0){
-                E[3*j + 1] = '0';
+                E[3*j + 3] = '0';
                 
             }
             else if(strcmp(cur,"F1")==0){
-                E[3*j + 1] = '1';
+                E[3*j + 3] = '1';
             }
             else if(strcmp(cur,"F#1")==0 || strcmp(cur,"Gb1")==0){
-                E[3*j + 1] = '2';
+                E[3*j + 3] = '2';
             }
             else if(strcmp(cur,"G1")==0){
-                E[3*j + 1] = '3';
+                E[3*j + 3] = '3';
             }
             else if(strcmp(cur,"G#1")==0 || strcmp(cur,"Ab1")==0){
-                E[3*j + 1] = '4';
+                E[3*j + 3] = '4';
             }
             
         }
