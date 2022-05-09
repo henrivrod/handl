@@ -20,8 +20,8 @@ type expr =
   | ArrAccess of string * expr
   | NoteAssign of string * expr * expr
   | PhraseAssign of string
-  | PhraseAdd of string * expr
-  | SongMeasure of string * expr
+  | PhraseAdd of string * expr * expr
+  | SongMeasure of string * expr * expr
   | SongAssign of string
   | Call of string * expr list
   | SongTempo of string * expr
@@ -100,9 +100,9 @@ let rec string_of_expr = function
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
   | NoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_expr pitch ^ ", " ^ string_of_expr duration ^ ")"
   | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
-  | PhraseAdd(id, note) -> id ^ ".add(" ^ string_of_expr note ^ ")"
-  | SongMeasure(id, value) -> id ^ ".measure(" ^ string_of_expr value ^ ")"
+  | PhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_expr idx ^ ", " ^ string_of_expr note ^ ")"
   | SongAssign(id) -> "Song " ^ id ^ " = Song()"
+  | SongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_expr idx ^ ", " ^ string_of_expr phrase ^ ")"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value

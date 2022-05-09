@@ -131,8 +131,8 @@ expr_rule:
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
   | NOTE ID ASSIGN NOTE LPAREN expr_rule COMMA expr_rule RPAREN           { NoteAssign($2, $6, $8) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
-  | ID ADDNOTE LPAREN expr_rule RPAREN            { PhraseAdd($1, $4)     }
-  | ID MEASURE LPAREN expr_rule RPAREN            { SongMeasure($1, $4)     }
+  | ID ADDNOTE LPAREN expr_rule COMMA expr_rule RPAREN            { PhraseAdd($1, $4, $6)    }
+  | ID MEASURE LPAREN expr_rule COMMA expr_rule RPAREN            { SongMeasure($1, $4, $6)  } 
   | ID TEMPO ASSIGN expr_rule                          {SongTempo($1, $4)}
   | ID BARS ASSIGN expr_rule                          {SongBars($1, $4)}
   | ID TIMESIGNATURE ASSIGN expr_rule                          {SongTimeSignature($1, $4)}
