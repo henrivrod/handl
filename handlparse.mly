@@ -129,7 +129,7 @@ expr_rule:
   | LPAREN expr_rule RPAREN                     { $2                    }
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
-  | NOTE ID ASSIGN NOTE LPAREN expr_rule RPAREN           { NoteAssign($2, $6) }
+  | NOTE ID ASSIGN NOTE LPAREN STRLIT RPAREN           { NoteAssign($2, $6) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ADDNOTE LPAREN expr_rule COMMA expr_rule RPAREN            { PhraseAdd($1, $4, $6)    }
   | ID MEASURE LPAREN expr_rule COMMA expr_rule RPAREN            { SongMeasure($1, $4, $6)  } 
