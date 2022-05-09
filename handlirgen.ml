@@ -30,13 +30,16 @@ let translate (globals, functions) =
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
-  and float_t    = L.double_type context in
-  let str_t      = L.pointer_type i8_t in
-  let named struct_note_t = L.named_struct_type context
+  and float_t    = L.double_type context
+  and void_t     = L.void_type   context in
+  let str_t      = L.pointer_type i8_t
+  and i32_ptr_t  = L.pointer_type i32_t
+  and i8_ptr_t  = L.pointer_type i8_t in
+(*  let named struct_note_t = L.named_struct_type context
   "named_struct_note_t" in
   ignore (L.struct_set_body named_struct_note_t [| L.pointer_type i8_t; L.i32_type context|] false);
   (* Note is a struct of a string representing pitch and int representing strength of the note *)
-
+*)
   (* Return the LLVM type for a primitive Handl type *)
   let ltype_of_primitive_typ = function
       A.PrimitiveType(A.Int)   -> i32_t
@@ -44,13 +47,13 @@ let translate (globals, functions) =
     | A.PrimitiveType(A.Float)  -> float_t
     | A.PrimitiveType(A.Char)  -> i8_t
     | A.PrimitiveType(A.String)  -> str_t
-    | A.PrimitiveType(A.Note)  -> named_struct_note_t
+    | A.PrimitiveType(A.Note)  -> named_struct_note_t (*NEEDS TO BE FIXED*)
     | _                        -> raise (Failure "Unmatched type in ltype_of_typ")
   in
   (* Return the LLVM type for all Handl types *)
   let ltype_of_typ = function
       A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
-      | A.ArrayType(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
+      | A.PrimArray(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
   in
 
   (* Create a map of global variables after creating each *)
@@ -163,8 +166,8 @@ let translate (globals, functions) =
     let rec build_expr builder ((_, e) : sexpr) = match e with
         SLiteral i  -> L.const_int i32_t i  
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
-      | SFloatLit f -> L.const_float_of_string float_t f
-      | SChrLit l -> L.const_char_of_string i8_t l
+      | SFloatLit f -> L.const_float float_t f
+      | SChrLit l -> L.const_char_of_string i8_t l (*NEEDS TO BE FIXED*)
       | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
       | SNewArr (t, e) -> let len = build_expr builder e
                                   in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
@@ -178,26 +181,47 @@ let translate (globals, functions) =
             let build = L.build_store assign_val arr_gep builder in
             index+1
           in let length = List.fold_left create 0 a 
-          
+      (*NEEDS TO BE FIXED*)
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
-      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
+      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in
         let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
         ignore(L.build_store noteLit (lookup n) builder); noteLit
+      (*NEEDS TO BE FIXED*)
+      | SBinop ((A.PrimitiveType(Float), _) as e1, op, e2) ->
+          let e1' = build_expr builder e1
+          and e2' = build_expr builder e2 in
+          (match op with
+             A.Add     -> L.build_fadd
+           | A.Sub     -> L.build_fsub
+           | A.Mult    -> L.build_fmul
+           | A.Div     -> L.build_fdiv
+           | A.Equal   -> L.build_fcmp L.Fcmp.Oeq
+           | A.Neq     -> L.build_fcmp L.Fcmp.One
+           | A.Less    -> L.build_fcmp L.Fcmp.Olt
+           | A.Greater -> L.build_fcmp L.Fcmp.Ogt
+           | A.LessEqual -> L.build_fcmp L.Fcmp.Ole
+           | A.GreaterEqual -> L.build_fcmp L.Fcmp.Oge
+          )e1' e2' "tmp" builder
       | SBinop (e1, op, e2) ->
         let e1' = build_expr builder e1
         and e2' = build_expr builder e2 in
         (match op with
-           A.Add     -> L.build_add
-         | A.Sub     -> L.build_sub
-         | A.And     -> L.build_and
-         | A.Or      -> L.build_or
-         | A.Equal   -> L.build_icmp L.Icmp.Eq
-         | A.Neq     -> L.build_icmp L.Icmp.Ne
-         | A.Less    -> L.build_icmp L.Icmp.Slt
+             A.Add     -> L.build_add
+           | A.Sub     -> L.build_sub
+           | A.Mult    -> L.build_mul
+           | A.Div     -> L.build_sdiv
+           | A.And     -> L.build_and
+           | A.Or      -> L.build_or
+           | A.Equal   -> L.build_icmp L.Icmp.Eq
+           | A.Neq     -> L.build_icmp L.Icmp.Ne
+           | A.Less    -> L.build_icmp L.Icmp.Slt
+           | A.Greater -> L.build_icmp L.Icmp.Sgt
+           | A.LessEqual -> L.build_icmp L.Icmp.Sle
+           | A.GreaterEqual -> L.build_icmp L.Icmp.Sge
         ) e1' e2' "tmp" builder
-      | SArrayAssign (arr_name, idx_expr, val_expr) ->
+      | SArrAssign (arr_name, idx_expr, val_expr) ->
         let idx = (build_expr builder idx_expr)
         and assign_val = (build_expr builder val_expr) in
         let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
@@ -205,7 +229,7 @@ let translate (globals, functions) =
         let arr_ptr_load = L.build_load arr_ptr arr_name builder in
         let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
         L.build_store assign_val arr_gep builder
-      | SArrayAccess (arr_name, idx_expr) ->
+      | SArrAccess (arr_name, idx_expr) ->
         let idx = build_expr builder idx_expr in
         let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
         let arr_ptr_load =
@@ -239,7 +263,7 @@ let translate (globals, functions) =
         SBlock sl -> List.fold_left build_stmt builder sl
       | SExpr e -> ignore(build_expr builder e); builder
       | SReturn e -> ignore(L.build_ret (build_expr builder e) builder); builder
-      | SIf (predicate, then_stmt, else_stmt) ->
+      | SIfElse (predicate, then_stmt, else_stmt) ->
         let bool_val = build_expr builder predicate in
 
         let then_bb = L.append_block context "then" the_function in
@@ -254,6 +278,18 @@ let translate (globals, functions) =
 
         ignore(L.build_cond_br bool_val then_bb else_bb builder);
         L.builder_at_end context end_bb
+      | SIf (predicate, then_stmt) ->
+      let bool_val = build_expr builder predicate in
+
+      let then_bb = L.append_block context "then" the_function in
+      ignore (build_stmt (L.builder_at_end context then_bb) then_stmt);
+
+      let end_bb = L.append_block context "if_end" the_function in
+      let build_br_end = L.build_br end_bb in (* partial function *)
+      add_terminal (L.builder_at_end context then_bb) build_br_end;
+
+      ignore(L.build_cond_br bool_val then_bb end_bb builder);
+      L.builder_at_end context end_bb
 
       | SWhile (predicate, body) ->
         let while_bb = L.append_block context "while" the_function in
