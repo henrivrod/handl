@@ -107,7 +107,7 @@ expr_rule:
   | FLIT                                        { FloatLit $1           }
   | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
-  | NEW ARRAY LT primitive_typ GT LBRACK LITERAL RBRACK {NewArr($4,$7)}
+  | NEW ARRAY LT primitive_typ GT LBRACK expr_rule RBRACK {NewArr($4,$7)}
   | LBRACK array_opt RBRACK                         { ArrLit $2             }
   | ID                                          { Id $1                 }
   | expr_rule POWER expr_rule                   { Binop ($1, Pow, $3)   }

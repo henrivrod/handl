@@ -120,7 +120,10 @@ let check (globals, functions) =
       | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
       | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
-      | NewArr(t,l) -> (PrimArray(t), SNewArr(t,l))
+      | NewArr(t,l) ->
+        let checked = check_expr l in
+        if fst checked <> PrimitiveType(Int) then raise (Failure (string_of_expr(l) ^ " is not an int and cannot be used as an array length"))
+        else (PrimArray(t), SNewArr(t,checked))
       | ArrLit(a) ->
         let first = fst (check_expr (List.hd a)) in
         let err = "Array element incompatible" in

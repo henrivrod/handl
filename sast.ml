@@ -9,7 +9,7 @@ and sx =
   | SFloatLit of float
   | SChrLit of char
   | SStrLit of string
-  | SNewArr of prim * int
+  | SNewArr of prim * sexpr
   | SArrLit of sexpr list
   | SId of string
   | SNot of sexpr
@@ -58,7 +58,7 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(false) -> "false"
   | SChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | SStrLit(l) -> "\"" ^ l ^ "\""
-  | SNewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_int l ^ "]"
+  | SNewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_sexpr l ^ "]"
   | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | SId(s) -> s
   | SNot(e) -> "not " ^ string_of_sexpr e
