@@ -29,17 +29,16 @@ let translate (globals, functions) =
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
-  and i1_t       = L.i1_type     context
-  and float_t    = L.double_type context
-  and void_t     = L.void_type   context in
-  let str_t      = L.pointer_type i8_t
-  and i32_ptr_t  = L.pointer_type i32_t
-  and i8_ptr_t  = L.pointer_type i8_t in
-(*  let named struct_note_t = L.named_struct_type context
+  and i1_t       = L.i1_type     context in
+  let i32_ptr_t  = L.pointer_type i32_t
+  and i8_ptr_t =  L.pointer_type i8_t
+  and float_t    = L.double_type context in
+  let str_t      = L.pointer_type i8_t in
+  let named_struct_note_t = L.named_struct_type context
   "named_struct_note_t" in
   ignore (L.struct_set_body named_struct_note_t [| L.pointer_type i8_t; L.i32_type context|] false);
   (* Note is a struct of a string representing pitch and int representing strength of the note *)
-*)
+
   (* Return the LLVM type for a primitive Handl type *)
   let ltype_of_primitive_typ = function
       A.PrimitiveType(A.Int)   -> i32_t
@@ -185,7 +184,7 @@ let translate (globals, functions) =
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
-      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in
+      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
         let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
         ignore(L.build_store noteLit (lookup n) builder); noteLit
       (*NEEDS TO BE FIXED*)
@@ -237,9 +236,10 @@ let translate (globals, functions) =
             L.build_load arr_ptr arr_name builder in
         let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
           L.build_load arr_gep (llname ^ "_load") builder
-      | SCall ("print", [e]) ->
-        L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
-          "printf" builder
+      (*| SPhraseAssign(id) -> SNewArr(A.Note, SLiteral(8))
+      | SPhraseAdd(id, idx, note) -> SArrayAssign(id, idx, note)
+      | SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
+      | SSongMeasure(id, measure) -> *)
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
@@ -263,7 +263,7 @@ let translate (globals, functions) =
         SBlock sl -> List.fold_left build_stmt builder sl
       | SExpr e -> ignore(build_expr builder e); builder
       | SReturn e -> ignore(L.build_ret (build_expr builder e) builder); builder
-      | SIfElse (predicate, then_stmt, else_stmt) ->
+      | SIf (predicate, then_stmt, else_stmt) ->
         let bool_val = build_expr builder predicate in
 
         let then_bb = L.append_block context "then" the_function in
