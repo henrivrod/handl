@@ -29,10 +29,12 @@ let translate (globals, functions) =
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
-  and i1_t       = L.i1_type     context
+  and i1_t       = L.i1_type     context in
+  let i32_ptr_t  = L.pointer_type i32_t
+  and i8_ptr_t =  L.pointer_type i8_t
   and float_t    = L.double_type context in
   let str_t      = L.pointer_type i8_t in
-  let named struct_note_t = L.named_struct_type context
+  let named_struct_note_t = L.named_struct_type context
   "named_struct_note_t" in
   ignore (L.struct_set_body named_struct_note_t [| L.pointer_type i8_t; L.i32_type context|] false);
   (* Note is a struct of a string representing pitch and int representing strength of the note *)
@@ -50,7 +52,7 @@ let translate (globals, functions) =
   (* Return the LLVM type for all Handl types *)
   let ltype_of_typ = function
       A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
-      | A.ArrayType(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
+      | A.PrimArray(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
   in
 
   (* Create a map of global variables after creating each *)
@@ -163,12 +165,11 @@ let translate (globals, functions) =
     let rec build_expr builder ((_, e) : sexpr) = match e with
         SLiteral i  -> L.const_int i32_t i  
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
-      | SFloatLit f -> L.const_float_of_string float_t f
-      | SChrLit l -> L.const_char_of_string i8_t l
+      | SFloatLit f -> L.const_float float_t f
+      (*| SChrLit l -> L.const_char_of_string i8_t l*)
       | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
-      | SNewArr (t, e) -> let len = build_expr builder e
-                                  in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
-      | SArrLit (a) ->
+      | SNewArr (t, i) -> let len = SLiteral i in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) () builder
+      (*| SArrLit (a) ->
           let array_ptr = make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
           in let llname = "array_name" ^ "[" ^ L.string_of_llvalue idx ^ "]" in
           let arr_ptr_load = L.build_load array_ptr arr_name builder
@@ -178,12 +179,12 @@ let translate (globals, functions) =
             let build = L.build_store assign_val arr_gep builder in
             index+1
           in let length = List.fold_left create 0 a 
-          
+          array_ptr*)
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
       | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
-        let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
+        let noteLit = L.const_named_struct named_struct_note_t [|p' ; s' |]  in 
         ignore(L.build_store noteLit (lookup n) builder); noteLit
       | SBinop (e1, op, e2) ->
         let e1' = build_expr builder e1
@@ -197,7 +198,7 @@ let translate (globals, functions) =
          | A.Neq     -> L.build_icmp L.Icmp.Ne
          | A.Less    -> L.build_icmp L.Icmp.Slt
         ) e1' e2' "tmp" builder
-      | SArrayAssign (arr_name, idx_expr, val_expr) ->
+      | SArrAssign (arr_name, idx_expr, val_expr) ->
         let idx = (build_expr builder idx_expr)
         and assign_val = (build_expr builder val_expr) in
         let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
@@ -205,7 +206,7 @@ let translate (globals, functions) =
         let arr_ptr_load = L.build_load arr_ptr arr_name builder in
         let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
         L.build_store assign_val arr_gep builder
-      | SArrayAccess (arr_name, idx_expr) ->
+      | SArrAccess (arr_name, idx_expr) ->
         let idx = build_expr builder idx_expr in
         let llname = arr_name ^ "[" ^ L.string_of_llvalue idx ^ "]" in
         let arr_ptr_load =
@@ -213,9 +214,10 @@ let translate (globals, functions) =
             L.build_load arr_ptr arr_name builder in
         let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
           L.build_load arr_gep (llname ^ "_load") builder
-      | SCall ("print", [e]) ->
-        L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
-          "printf" builder
+      (*| SPhraseAssign(id) -> SNewArr(A.Note, SLiteral(8))
+      | SPhraseAdd(id, idx, note) -> SArrayAssign(id, idx, note)
+      | SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
+      | SSongMeasure(id, measure) -> *)
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
