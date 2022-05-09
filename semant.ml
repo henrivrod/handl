@@ -69,12 +69,14 @@ let check (globals, functions) =
       if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
 
-    let check_note_assign lvaluet e1t e2t err = 
-      if e1t = PrimitiveType(String) && e2t = PrimitiveType(Float) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
+    (*
+    let check_note_assign lvaluet e1t err = 
+      if e1t = PrimitiveType(String) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
     in
+    *)
 
-    let check_phrase_add lvaluet e1t err = 
-      if e1t = PrimitiveType(Note) && lvaluet = PhraseType then lvaluet else raise (Failure(err))
+    let check_phrase_add lvaluet e1t e2t err = 
+      if e1t = PrimitiveType(Int) && e2t = PrimitiveType(Note) && lvaluet = PhraseType then lvaluet else raise (Failure(err))
     in
 
     let check_song_tempo lvaluet e1t err = 
@@ -100,6 +102,8 @@ let check (globals, functions) =
       in match temp with
       PrimitiveType(t) -> PrimitiveType(t)
       | PrimArray(t) -> PrimArray(t)
+      | PhraseType -> PhraseType 
+      | SongType -> SongType
     in
 
     let type_of_prim p =
@@ -153,25 +157,26 @@ let check (globals, functions) =
           let t = match op with
               Pow| Add | Sub | Mult | Mod when t1 = PrimitiveType(Int) -> PrimitiveType(Int)
             | Pow| Add | Sub | Mult when t1 = PrimitiveType(Float) -> PrimitiveType(Int)
-            | Div when t1= PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Float)
+            | Div when t1= PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Float)
             | Equal | Neq -> PrimitiveType(Bool)
-            | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Bool)
+            | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Bool)
             | And | Or when t1 = PrimitiveType(Bool) -> PrimitiveType(Bool)
             | _ -> raise (Failure err)
           in
           (t, SBinop((t1, e1'), op, (t2, e2')))
         else raise (Failure err)
-      | NoteAssign(var, e1, e2) as ex -> 
+      (*| NoteAssign(var, e1) as ex -> 
+        let lt = type_of_identifier var in
+        let (e1_type, e1') = check_expr e1 in
+        let err = "illegal assignment " ^ string_of_expr ex
+        in ((check_note_assign lt e1_type err), SNoteAssign(var, sexpr1))
+      *)
+      | PhraseAdd(var, e1, e2) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let (e2_type, e2') as sexpr2 = check_expr e2 in
         let err = "illegal assignment " ^ string_of_expr ex
-        in ((check_note_assign lt e1_type e2_type err), SNoteAssign(var, sexpr1, sexpr2))
-      | PhraseAdd(var, e1) as ex ->
-        let lt = type_of_identifier var in
-        let (e1_type, e1') as sexpr1 = check_expr e1 in
-        let err = "illegal assignment " ^ string_of_expr ex
-        in ((check_phrase_add lt e1_type err), SPhraseAdd(var, sexpr1))
+        in ((check_phrase_add lt e1_type e2_type err), SPhraseAdd(var, sexpr1, sexpr2))
       | SongTempo(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
