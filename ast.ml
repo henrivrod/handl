@@ -10,7 +10,7 @@ type expr =
   | FloatLit of float
   | ChrLit of char
   | StrLit of string
-  | NewArr of prim * int
+  | NewArr of prim * expr
   | ArrLit of expr list
   | Id of string
   | Not of expr
@@ -88,7 +88,7 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | StrLit(l) -> "\"" ^ l ^ "\""
-  | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_int l ^ "]"
+  | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_expr l ^ "]"
   | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
