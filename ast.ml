@@ -26,6 +26,7 @@ type expr =
   | SongTempo of string * expr
   | SongBars of string * expr
   | SongTimeSignature of string * expr
+  | SongPlay of string
  
 
 type stmt =
@@ -105,6 +106,7 @@ let rec string_of_expr = function
   | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value
   | SongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_expr value
   | SongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_expr value
+  | SongPlay(id) -> id ^ ".play()"
 
 and string_of_arr l =
    if List.length l = 0 then "" else

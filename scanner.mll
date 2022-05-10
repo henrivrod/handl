@@ -47,6 +47,7 @@ rule token = parse
 | "Phrase" { PHRASE }
 | ".add" { ADDNOTE }
 | ".tempo" { TEMPO }
+| ".play()" { PLAY }
 | ".bars" { BARS }
 | ".measure" { MEASURE }
 | ".timeSignature" { TIMESIGNATURE }
