@@ -2,34 +2,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+// #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
  
 struct Note
 {
-    char * pitch;
+    char pitch[4];
 };
  
 struct Phrase
 {
 
-    struct Note notes[5];
+    struct Note notes[8];
 };
 
 struct Song
 {
-    struct Phrase measures[6];
+    struct Phrase measures[32];
     char timeSignature[4];
     int bars;
 };
  
 int play_song(struct Song *s1) 
 {
-
-    
-    for(int i=0; i < LEN((*s1).measures)-1; i++){
+    int num_notes = (*s1).timeSignature[0] - '0';
+    printf("Notes per phrase: %d\n", num_notes);
+    for(int i=0; i < (*s1).bars; i++){
         
-        int num_notes = LEN((*s1).measures[i].notes)-1;
+        
+        
         int str_len = num_notes*3 + 2;
         
     
@@ -64,7 +65,7 @@ int play_song(struct Song *s1)
             e[n] = '-';
         }
         
-        for(int j=0; j < LEN((*s1).measures[i].notes)-1; j++){
+        for(int j=0; j < num_notes; j++){
             // printf("%s", s1.measures[i].notes[j].pitch);
             // printf("\n");
 
@@ -180,8 +181,6 @@ int play_song(struct Song *s1)
        
     }
  
-    
-
     return 0;
 }
 
@@ -196,12 +195,13 @@ int play_song(struct Song *s1)
 //     struct Note n7 = {"A#2"};
 //     struct Note n8 = {"D2"};
     
-//     struct Phrase p1 = {{n1,n2,n3,n4}};
-//     struct Phrase p2 = {{n5,n6,n7,n8}};
-//     struct Phrase p3 = {{n1,n2,n3,n4}};
-//     struct Phrase p4 = {{n5,n6,n7,n8}};
-//     struct Phrase p5 = {{n1,n2,n3,n4}};
-//     struct Song s1 = {{p1,p2,p3,p4,p5},"4/4",5};
+//     struct Phrase p1 = {{n1,n2,n3,n4,n1}};
+//     struct Phrase p2 = {{n5,n6,n7,n8,n1}};
+//     struct Phrase p3 = {{n1,n2,n3,n4,n1}};
+//     struct Phrase p4 = {{n5,n6,n7,n8,n1}};
+//     struct Phrase p5 = {{n1,n2,n3,n4,n1}};
+//     struct Phrase p6 = {{n6,n2,n3,n4,n1}};
+//     struct Song s1 = {{p1,p2,p3,p4,p5},"6/4",5};
     
 //     play_song(&s1);
     
