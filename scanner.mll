@@ -4,6 +4,7 @@
 
 let digit = ['0'-'9']
 let letter = ['a'-'z' 'A'-'Z']
+let ascii = [' '-'~']
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
@@ -53,7 +54,7 @@ rule token = parse
 | "through" { THROUGH }
 | "in" { IN }
 | "new" { NEW }
-| '"'((digit | letter)* as str)'"'  { STRLIT(str) }
+| '"'((ascii)* as str)'"'  { STRLIT(str) }
 | digit+ as lem  { LITERAL(int_of_string lem) }
 | digit+ '.' digit+ ( ['e' 'E'] ['+' '-']? digit+ )? as lem {FLIT(float_of_string lem) }
 | letter (digit | letter | '_')* as lem { ID(lem) }

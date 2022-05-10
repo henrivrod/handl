@@ -178,9 +178,8 @@ let check (globals, functions) =
         if t1 = t2 then
           (* Determine expression type based on operator and operand types *)
           let t = match op with
-              Add | Sub | Mult when t1 = PrimitiveType(Int) -> PrimitiveType(Int)
-            | Add | Sub | Mult when t1 = PrimitiveType(Float) -> PrimitiveType(Float)
-            | Div when t1= PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Float)
+              Add | Sub | Mult | Div when t1 = PrimitiveType(Int) -> PrimitiveType(Int)
+            | Add | Sub | Mult | Div when t1 = PrimitiveType(Float) -> PrimitiveType(Float)
             | Equal | Neq -> PrimitiveType(Bool)
             | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Bool)
             | And | Or when t1 = PrimitiveType(Bool) -> PrimitiveType(Bool)
