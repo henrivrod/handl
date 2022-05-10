@@ -121,7 +121,6 @@ let check (globals, functions) =
       PrimitiveType(Int) -> Int
       | PrimitiveType(Bool) -> Bool
       | PrimitiveType(Float) -> Float
-      | PrimitiveType(Char) -> Char
       | PrimitiveType(String) -> String
       | PrimitiveType(Note) -> Note
     in
@@ -131,7 +130,6 @@ let check (globals, functions) =
         Literal l -> (PrimitiveType(Int), SLiteral l)
       | FloatLit(f) -> (PrimitiveType(Float), SFloatLit f)
       | BoolLit l -> (PrimitiveType(Bool), SBoolLit l)
-      | ChrLit(l) -> (PrimitiveType(Char), SChrLit l)
       | StrLit(l) -> (PrimitiveType(String), SStrLit l)
       | Id var -> (type_of_identifier var, SId var)
       | NewArr(t,l) ->

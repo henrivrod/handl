@@ -42,7 +42,6 @@ rule token = parse
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
 | "Array"  { ARRAY }
-| "char"   { CHAR }
 | "String" { STRING }
 | "for" { FOR }
 | "Note" { NOTE }

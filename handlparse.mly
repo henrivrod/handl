@@ -7,7 +7,7 @@ open Ast
 %token SEMI LPAREN RPAREN LBRACE RBRACE ASSIGN LBRACK RBRACK
 %token PLUS MINUS TIMES DIVISION MODULO POWER
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
-%token IF ELSE WHILE INT BOOL FLOAT CHAR STRING NOTE
+%token IF ELSE WHILE INT BOOL FLOAT STRING NOTE
 %token FOR THROUGH IN NEW
 %token RETURN COMMA ARRAY PHRASE SONG
 %token ADDNOTE MEASURE
@@ -15,7 +15,6 @@ open Ast
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
-%token <char> CHRLIT
 %token <string> ID STRLIT
 %token EOF
 
@@ -58,7 +57,6 @@ primitive_typ:
   INT                       { Int  }
   | BOOL                    { Bool }
   | FLOAT                   { Float }
-  | CHAR                    { Char }
   | STRING                  { String }
   | NOTE                    { Note   }
 

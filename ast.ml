@@ -1,6 +1,6 @@
 type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
-type prim = Int | Bool | Float | Char| String | Note
+type prim = Int | Bool | Float | String | Note
 
 type typ = PrimitiveType of prim | PrimArray of prim | PhraseType | SongType
 
@@ -8,7 +8,6 @@ type expr =
   | Literal of int
   | BoolLit of bool
   | FloatLit of float
-  | ChrLit of char
   | StrLit of string
   | NewArr of prim * expr
   | ArrLit of expr list
@@ -73,7 +72,6 @@ let string_of_prim = function
     | Bool -> "bool"
     | Float -> "float"
     | String -> "string"
-    | Char -> "char"
     | Note -> "Note"
 
 let rec string_of_typ = function
@@ -88,7 +86,6 @@ let rec string_of_expr = function
   | FloatLit(f) -> string_of_float f
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
-  | ChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | StrLit(l) -> "\"" ^ l ^ "\""
   | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_expr l ^ "]"
   | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"

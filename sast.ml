@@ -7,7 +7,6 @@ and sx =
     SLiteral of int
   | SBoolLit of bool
   | SFloatLit of float
-  | SChrLit of char
   | SStrLit of string
   | SNewArr of prim * sexpr
   | SArrLit of sexpr list
@@ -56,7 +55,6 @@ let rec string_of_sexpr (t, e) =
   | SFloatLit(f) -> string_of_float f
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
-  | SChrLit(l) -> "'" ^ Char.escaped l ^ "'"
   | SStrLit(l) -> "\"" ^ l ^ "\""
   | SNewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_sexpr l ^ "]"
   | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
