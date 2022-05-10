@@ -46,11 +46,12 @@ let translate (globals, functions) =
     | _                        -> raise (Failure "Unmatched type in ltype_of_typ")
   in
   (* Return the LLVM type for all Handl types *)
-  let ltype_of_typ = function
-      A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
-      | A.PrimArray(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
-      | A.PhraseType -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(A.Note)))
-  in
+  let rec ltype_of_typ = function
+    A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
+    | A.PrimArray(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
+    | A.PhraseType -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(A.Note)))
+    | A.SongType -> L.pointer_type (ltype_of_typ A.PhraseType)
+in
 
   (* Create a map of global variables after creating each *)
   let global_vars : L.llvalue StringMap.t =
@@ -231,8 +232,11 @@ let translate (globals, functions) =
       | SPhraseAdd(id, idx, note) -> 
         let t = A.PhraseType in 
         build_expr builder (t, SArrAssign(id, idx, note))
-      (*| SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
-      | SSongMeasure(id, measure) -> *)
+      | SSongAssign(id) -> let t = A.SongType in
+        let len = build_expr builder (A.PrimitiveType(A.Int), SLiteral(32)) in
+        make_array (ltype_of_typ (A.PhraseType)) (len) builder
+      | SSongMeasure(id, idx, phrase) -> let t = A.SongType in 
+        build_expr builder (t, SArrAssign(id, idx, phrase))
       | SCall ("print", [e]) ->
               L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
                 "printf" builder
@@ -241,6 +245,7 @@ let translate (globals, functions) =
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
+        
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
