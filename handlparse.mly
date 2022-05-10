@@ -104,7 +104,6 @@ expr_rule:
   | BLIT                                        { BoolLit $1            }
   | LITERAL                                     { Literal $1            }
   | FLIT                                        { FloatLit $1           }
-  | CHRLIT                                      { ChrLit $1             }
   | STRLIT                                      { StrLit $1             }
   | NEW ARRAY LT primitive_typ GT LBRACK expr_rule RBRACK {NewArr($4,$7)}
   | LBRACK array_opt RBRACK                         { ArrLit $2             }
