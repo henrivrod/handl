@@ -22,15 +22,14 @@ open Ast
 %type <Ast.program> program
 
 %right ASSIGN
-%left NOT
 %left OR
 %left AND
 %left EQ NEQ LEQ GEQ
 %left LT
 %left GT
-%left POWER
-%left TIMES DIVISION MODULO
 %left PLUS MINUS
+%left TIMES DIVISION
+%right NOT
 
 %%
 program:

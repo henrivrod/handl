@@ -215,6 +215,8 @@ in
            | A.LessEqual -> L.build_icmp L.Icmp.Sle
            | A.GreaterEqual -> L.build_icmp L.Icmp.Sge
         ) e1' e2' "tmp" builder
+      | SNot(e) ->
+        let e' = build_expr builder e in L.build_not e' "tmp" builder
       | SArrAssign (arr_name, idx_expr, val_expr) ->
         let idx = (build_expr builder idx_expr)
         and assign_val = (build_expr builder val_expr) in
