@@ -44,14 +44,46 @@ int main()
     
     for(int i=0; i < LEN(s1.measures)-1; i++){
         
-            char E[] = "E|------------";
-            char A[] = "A|------------";
-            char D[] = "D|------------";
-            char G[] = "G|------------";
-            char B[] = "B|------------";
-            char e[] = "e|------------";
+        int num_notes = LEN(s1.measures[i].notes)-1;
+        int str_len = num_notes*3 + 2;
+        
+    
+        char E[str_len];
+        char A[str_len];
+        char D[str_len];
+        char G[str_len];
+        char B[str_len];
+        char e[str_len];
+        
+        E[0] = 'E';
+        A[0] = 'A';
+        D[0] = 'D';
+        G[0] = 'G';
+        B[0] = 'B';
+        e[0] = 'e';
+        
+        E[1] = '|';
+        A[1] = '|';
+        D[1] = '|';
+        G[1] = '|';
+        B[1] = '|';
+        e[1] = '|';
+        
+        //populate with dashes
+        for(int n = 2; n < str_len; n++){
+            E[n] = '-';
+            A[n] = '-';
+            D[n] = '-';
+            G[n] = '-';
+            B[n] = '-';
+            e[n] = '-';
+        }
+        
+        
+        
+            
        
-        for(int j=0; j < 4; j++){
+        for(int j=0; j < LEN(s1.measures[i].notes)-1; j++){
             // printf("%s", s1.measures[i].notes[j].pitch);
             // printf("\n");
 
