@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 // #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
-
- 
+/*
 struct Note
 {
     char pitch[4];
@@ -22,13 +21,25 @@ struct Song
     // char timeSignature[4];
     // int bars;
 };
+*/
+typedef char* Note;
+typedef Note* Phrase;
+typedef Phrase* Song;
+
+
  
-int play_song(struct Song *s1) 
+int play_song(Song s1) 
 {
     // int num_notes = (*s1).timeSignature[0] - '0';
     int num_notes = 4;
     int num_phrases = 1;
-    // printf("Time: %s\n", (*s1).timeSignature);
+    for (int i = 0; i < 32; i++) {
+        for (int j = 0; j < 8; j++) {
+            fprintf(stderr, "%s\n", s1[i][j]);
+            //fprintf(stderr, "%s\n", (*s1)[i][j]);
+        }
+    }
+    /* printf("Time: %s\n", (*s1).timeSignature);
     for(int i=0; i < num_phrases; i++){
         
         
@@ -71,7 +82,8 @@ int play_song(struct Song *s1)
             // printf("%s", s1.measures[i].notes[j].pitch);
             // printf("\n");
 
-            char* cur = (*s1).measures[i].notes[j].pitch;
+            char* cur = (s1)[i][j];
+            printf("Current string: %s", cur);
             //High e string
             if(strcmp(cur,"E3")==0){
                 e[3*j + 3] = '0';
@@ -181,7 +193,7 @@ int play_song(struct Song *s1)
         printf("%s\n",E);
         printf("/////////////\n");
        
-    }
+    }*/
  
     return 0;
 }

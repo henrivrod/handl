@@ -149,7 +149,7 @@ in
       L.build_gep ptr [| (L.const_int i8_t (-12)) |] "meta_ptr" builder
     in
     let play_song_t : L.lltype =
-      L.var_arg_function_type i32_t [| L.pointer_type (ltype_of_typ A.SongType) |] in
+      L.var_arg_function_type i32_t [| ltype_of_typ A.SongType |] in
     let play_song_func : L.llvalue =
       L.declare_function "play_song" play_song_t the_module in
 
