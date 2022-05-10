@@ -19,15 +19,17 @@ struct Phrase
 struct Song
 {
     struct Phrase measures[32];
-    char timeSignature[4];
-    int bars;
+    // char timeSignature[4];
+    // int bars;
 };
  
 int play_song(struct Song *s1) 
 {
-    int num_notes = (*s1).timeSignature[0] - '0';
-    printf("Notes per phrase: %d\n", num_notes);
-    for(int i=0; i < (*s1).bars; i++){
+    // int num_notes = (*s1).timeSignature[0] - '0';
+    int num_notes = 4;
+    int num_phrases = 1;
+    // printf("Time: %s\n", (*s1).timeSignature);
+    for(int i=0; i < num_phrases; i++){
         
         
         
@@ -187,7 +189,7 @@ int play_song(struct Song *s1)
 // int main(){
 //     struct Note n1 = {"E3"};
 //     struct Note n2 = {"A2"};
-//     struct Note n3 = {"A3"};
+//     struct Note n3 = {"A2"};
 //     struct Note n4 = {"A1"};
     
 //     struct Note n5 = {"B1"};
@@ -201,7 +203,8 @@ int play_song(struct Song *s1)
 //     struct Phrase p4 = {{n5,n6,n7,n8,n1}};
 //     struct Phrase p5 = {{n1,n2,n3,n4,n1}};
 //     struct Phrase p6 = {{n6,n2,n3,n4,n1}};
-//     struct Song s1 = {{p1,p2,p3,p4,p5},"6/4",5};
+//     // struct Song s1 = {{p1,p2,p3,p4,p5},"4/4",5};
+//     struct Song s1 = {{p1,p2,p3,p4,p5}};
     
 //     play_song(&s1);
     
