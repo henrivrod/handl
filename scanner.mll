@@ -52,8 +52,7 @@ rule token = parse
 | ".bars" { BARS }
 | ".measure" { MEASURE }
 | ".timeSignature" { TIMESIGNATURE }
-| "Song" { PHRASE }
-| "measure" { MEASURE }
+| "Song" { SONG }
 | "through" { THROUGH }
 | "in" { IN }
 | "new" { NEW }

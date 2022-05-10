@@ -85,6 +85,10 @@ let check (globals, functions) =
       if lvaluet = SongType then lvaluet else raise (Failure(err))
     in
 
+    let check_song_measure lvaluet e1t e2t err =
+      if e1t = PrimitiveType(Int) && e2t = PhraseType && lvaluet = SongType then lvaluet else raise (Failure(err))
+    in
+
     let check_song_tempo lvaluet e1t err = 
       if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
@@ -104,8 +108,8 @@ let check (globals, functions) =
 
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
-      let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s))
-      in match temp with
+      let temp = try StringMap.find s symbols with Not_found -> raise (Failure ("undeclared identifier " ^ s)) in 
+      match temp with
       PrimitiveType(t) -> PrimitiveType(t)
       | PrimArray(t) -> PrimArray(t)
       | PhraseType -> PhraseType
@@ -163,9 +167,9 @@ let check (globals, functions) =
           let t = match op with
               Pow| Add | Sub | Mult | Mod when t1 = PrimitiveType(Int) -> PrimitiveType(Int)
             | Pow| Add | Sub | Mult when t1 = PrimitiveType(Float) -> PrimitiveType(Int)
-            | Div when t1= PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Float)
+            | Div when t1= PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Float)
             | Equal | Neq -> PrimitiveType(Bool)
-            | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) or t1=PrimitiveType(Float) -> PrimitiveType(Bool)
+            | Less | Greater | LessEqual | GreaterEqual when t1 = PrimitiveType(Int) || t1=PrimitiveType(Float) -> PrimitiveType(Bool)
             | And | Or when t1 = PrimitiveType(Bool) -> PrimitiveType(Bool)
             | _ -> raise (Failure err)
           in
@@ -190,6 +194,12 @@ let check (globals, functions) =
           let lt = type_of_identifier var in
           let err = "illegal song assignment " ^ string_of_expr ex
           in ((check_song_assign lt err), SSongAssign(var))
+      | SongMeasure(var, e1, e2) as ex ->
+        let lt = type_of_identifier var in
+        let (e1_type, e1') as sexpr1 = check_expr e1 in
+        let (e2_type, e2') as sexpr2 = check_expr e2 in
+        let err = "illegal song measure add " ^ string_of_expr ex
+        in ((check_song_measure lt e1_type e2_type err), SSongMeasure(var, sexpr1, sexpr2))
       | SongTempo(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
@@ -239,7 +249,6 @@ let check (globals, functions) =
         else match t with
           PrimArray(a) -> (PrimitiveType(a), SArrAccess(s,se))
           | _ -> raise (Failure (s ^ " is not an Array"))
-      (*Need to add PhraseAssign, SongAssign, Song Measure*)
     in
 
     let check_bool_expr e =
