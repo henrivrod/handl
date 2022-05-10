@@ -25,6 +25,7 @@ and sx =
   | SSongTempo of string * sexpr
   | SSongBars of string * sexpr
   | SSongTimeSignature of string * sexpr
+  | SSongPlay of string
  
 
 type sstmt =
@@ -73,10 +74,12 @@ let rec string_of_sexpr (t, e) =
   | SSongAssign(id) -> id ^ " = Song()"
   | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
   | SSongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_sexpr value
+  | SSongPlay(id) -> id ^ ".play()"
   | SSongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_sexpr value
   | SCall(f, el) ->
             f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
       ) ^ ")"
+
   and string_of_arr l =
      if List.length l = 0 then "" else
      if List.length l > 1 then string_of_sexpr (List.hd l) ^ "," ^ string_of_arr (List.tl l) else string_of_sexpr (List.hd l)

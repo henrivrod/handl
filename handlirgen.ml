@@ -22,6 +22,9 @@ module StringMap = Map.Make(String)
 let translate (globals, functions) =
   let context    = L.global_context () in
 
+  let string_of_note note = note in
+  let string_of_phrase phrase = phrase in (* Fix these with guitar tab representation*)
+
   (* Create the LLVM compilation module into which
      we will generate code *)
   let the_module = L.create_module context "Handl" in
@@ -145,6 +148,10 @@ in
       let ptr = L.build_bitcast body_ptr i8_ptr_t "body_ptr" builder in
       L.build_gep ptr [| (L.const_int i8_t (-12)) |] "meta_ptr" builder
     in
+    let play_song_t : L.lltype =
+      L.var_arg_function_type i32_t [| L.pointer_type (ltype_of_typ A.SongType) |] in
+    let play_song_func : L.llvalue =
+      L.declare_function "play_song" play_song_t the_module in
 
     (* make array *)
     let make_array element_t len builder =
@@ -252,6 +259,28 @@ in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
+      | SSongPlay(song) -> 
+        let song' = build_expr builder (A.SongType, SId(song)) in
+        L.build_call play_song_func [| song' |] "play_song" builder
+          
+      (*| SPLay(song) -> 
+        let getPhraseObj(song, idx) = build_expr builder (SArrAccess(song, idx)) in
+        let getNoteObj(phrase, idx) = build_expr builder (SArrAccess(phrase, idx)) in
+        (* BuildList from: https://stackoverflow.com/questions/5653739/building-a-list-of-ints-in-ocaml*)
+        let buildList i n =
+          let rec aux acc i =
+            if i <= n then
+              aux (i::acc) (i+1)
+            else (List.rev acc)
+          in aux [] i
+        in 
+        let phrases = buildList 0 32 in
+        let printPhraseBlockList phrase = 
+          let notes = buildList 0 8 in
+
+        phrases = List.map (fun x -> getPhraseObj(song, x)) phrases in*)
+
+
         
     in
 

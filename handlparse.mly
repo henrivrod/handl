@@ -11,7 +11,7 @@ open Ast
 %token FOR THROUGH IN NEW
 %token RETURN COMMA ARRAY PHRASE SONG
 %token ADDNOTE MEASURE
-%token TIMESIGNATURE TEMPO BARS 
+%token TIMESIGNATURE TEMPO BARS PLAY 
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
@@ -134,6 +134,7 @@ expr_rule:
   | ID TIMESIGNATURE ASSIGN expr_rule                          {SongTimeSignature($1, $4)}
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
   | ID LPAREN array_opt RPAREN { Call ($1, $3)  }
+  | ID PLAY { SongPlay($1) }
 
 array_opt:
   /*nothing*/ { [] }

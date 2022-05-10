@@ -222,6 +222,10 @@ let check (globals, functions) =
           let (e1_type, e1') as sexpr1 = check_expr e1 in
           let err = "illegal assignment " ^ string_of_expr ex
           in ((check_song_bars lt e1_type err), SSongBars(var, sexpr1))
+      | SongPlay(id) as ex -> 
+        let lt = type_of_identifier id in
+        if lt <> SongType then raise (Failure ("invalid call: " ^ id ^ " is not a song" ))
+        else (SongType, SSongPlay(id))
       | SongTimeSignature(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
