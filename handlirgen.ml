@@ -242,7 +242,7 @@ in
         let t = A.PhraseType in 
         build_expr builder (t, SArrAssign(id, idx, note))
       | SSongAssign(id) -> let t = A.SongType in
-        let len = build_expr builder (A.PrimitiveType(A.Int), SLiteral(32)) in
+        let len = build_expr builder (A.PrimitiveType(A.Int), SLiteral(8)) in
         let e = make_array (ltype_of_typ (A.PhraseType)) (len) builder in
         ignore(L.build_store e (lookup id) builder); e
       | SSongMeasure(id, idx, phrase) -> let t = A.SongType in 
