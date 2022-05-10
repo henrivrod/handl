@@ -1,4 +1,4 @@
-type bop = Pow | Add | Sub | Div | Mult | Mod | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
+type bop = Add | Sub | Div | Mult | Equal | Neq | Less | And | Or | Greater | LessEqual | GreaterEqual
 
 type prim = Int | Bool | Float | String | Note
 
@@ -54,10 +54,8 @@ type program = bind list * func_def list
 let string_of_op = function
     Add -> "+"
   | Sub -> "-"
-  | Pow -> "^"
   | Mult -> "*"
   | Div -> "/"
-  | Mod -> "%"
   | Equal -> "=="
   | Neq -> "!="
   | LessEqual -> "<="
