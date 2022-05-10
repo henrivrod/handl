@@ -7,7 +7,7 @@
  
 struct Note
 {
-    char pitch[4];
+    char * pitch;
 };
  
 struct Phrase
@@ -23,28 +23,13 @@ struct Song
     int bars;
 };
  
-int main() 
+int play_song(struct Song *s1) 
 {
-    struct Note n1 = {"E3"};
-    struct Note n2 = {"A2"};
-    struct Note n3 = {"A3"};
-    struct Note n4 = {"A1"};
+
     
-    struct Note n5 = {"B1"};
-    struct Note n6 = {"B2"};
-    struct Note n7 = {"A#2"};
-    struct Note n8 = {"D2"};
-    
-    struct Phrase p1 = {{n1,n2,n3,n4}};
-    struct Phrase p2 = {{n5,n6,n7,n8}};
-    struct Phrase p3 = {{n1,n2,n3,n4}};
-    struct Phrase p4 = {{n5,n6,n7,n8}};
-    struct Phrase p5 = {{n1,n2,n3,n4}};
-    struct Song s1 = {{p1,p2,p3,p4,p5},"4/4",5};
-    
-    for(int i=0; i < LEN(s1.measures)-1; i++){
+    for(int i=0; i < LEN((*s1).measures)-1; i++){
         
-        int num_notes = LEN(s1.measures[i].notes)-1;
+        int num_notes = LEN((*s1).measures[i].notes)-1;
         int str_len = num_notes*3 + 2;
         
     
@@ -79,15 +64,11 @@ int main()
             e[n] = '-';
         }
         
-        
-        
-            
-       
-        for(int j=0; j < LEN(s1.measures[i].notes)-1; j++){
+        for(int j=0; j < LEN((*s1).measures[i].notes)-1; j++){
             // printf("%s", s1.measures[i].notes[j].pitch);
             // printf("\n");
 
-            char* cur = s1.measures[i].notes[j].pitch;
+            char* cur = (*s1).measures[i].notes[j].pitch;
             //High e string
             if(strcmp(cur,"E3")==0){
                 e[3*j + 3] = '0';
@@ -204,4 +185,26 @@ int main()
     return 0;
 }
 
+// int main(){
+//     struct Note n1 = {"E3"};
+//     struct Note n2 = {"A2"};
+//     struct Note n3 = {"A3"};
+//     struct Note n4 = {"A1"};
+    
+//     struct Note n5 = {"B1"};
+//     struct Note n6 = {"B2"};
+//     struct Note n7 = {"A#2"};
+//     struct Note n8 = {"D2"};
+    
+//     struct Phrase p1 = {{n1,n2,n3,n4}};
+//     struct Phrase p2 = {{n5,n6,n7,n8}};
+//     struct Phrase p3 = {{n1,n2,n3,n4}};
+//     struct Phrase p4 = {{n5,n6,n7,n8}};
+//     struct Phrase p5 = {{n1,n2,n3,n4}};
+//     struct Song s1 = {{p1,p2,p3,p4,p5},"4/4",5};
+    
+//     play_song(&s1);
+    
+//     return 0;
+// }
 
