@@ -34,9 +34,6 @@ let translate (globals, functions) =
   and i8_ptr_t =  L.pointer_type i8_t
   and float_t    = L.double_type context in
   let str_t      = L.pointer_type i8_t in
-  let named_struct_note_t = L.named_struct_type context
-  "named_struct_note_t" in
-  ignore (L.struct_set_body named_struct_note_t [| L.pointer_type i8_t; L.i32_type context|] false);
   (* Note is a struct of a string representing pitch and int representing strength of the note *)
 
   (* Return the LLVM type for a primitive Handl type *)
@@ -46,7 +43,7 @@ let translate (globals, functions) =
     | A.PrimitiveType(A.Float)  -> float_t
     | A.PrimitiveType(A.Char)  -> i8_t
     | A.PrimitiveType(A.String)  -> str_t
-    | A.PrimitiveType(A.Note)  -> named_struct_note_t (*NEEDS TO BE FIXED*)
+    | A.PrimitiveType(A.Note)  -> str_t 
     | _                        -> raise (Failure "Unmatched type in ltype_of_typ")
   in
   (* Return the LLVM type for all Handl types *)
@@ -184,10 +181,8 @@ let translate (globals, functions) =
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
-      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in
-        let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
-        ignore(L.build_store noteLit (lookup n) builder); noteLit
-      (*NEEDS TO BE FIXED*)
+      | SNoteAssign(s, e) -> let e' = build_expr builder e in
+        ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.PrimitiveType(Float), _) as e1, op, e2) ->
           let e1' = build_expr builder e1
           and e2' = build_expr builder e2 in

@@ -17,7 +17,7 @@ and sx =
   | SAssign of string * sexpr
   | SArrAssign of string * sexpr * sexpr
   | SArrAccess of string * sexpr
-  | SNoteAssign of string * string
+  | SNoteAssign of string * sexpr
   | SPhraseAssign of string
   | SPhraseAdd of string * sexpr * sexpr
   | SSongMeasure of string * sexpr * sexpr
@@ -68,7 +68,7 @@ let rec string_of_sexpr (t, e) =
   | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "]" ^
                             " = " ^ string_of_sexpr e2
   | SArrAccess(s,e) -> s ^ "[" ^ string_of_sexpr e ^ "]"
-  | SNoteAssign(id, pitch) -> "Note " ^ id ^ " = " ^ "Note(" ^ pitch ^ ")"
+  | SNoteAssign(id, pitch) -> "Note " ^ id ^ " = " ^ "Note(" ^ string_of_sexpr pitch ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
   | SPhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr note ^ ")"
   | SSongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr phrase ^ ")"
