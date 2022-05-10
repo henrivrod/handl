@@ -17,10 +17,10 @@ and sx =
   | SAssign of string * sexpr
   | SArrAssign of string * sexpr * sexpr
   | SArrAccess of string * sexpr
-  | SNoteAssign of string * sexpr * sexpr
+  | SNoteAssign of string * string
   | SPhraseAssign of string
-  | SPhraseAdd of string * sexpr
-  | SSongMeasure of string * sexpr
+  | SPhraseAdd of string * sexpr * sexpr
+  | SSongMeasure of string * sexpr * sexpr
   | SSongAssign of string
   | SCall of string * sexpr list
   | SSongTempo of string * sexpr
@@ -68,10 +68,10 @@ let rec string_of_sexpr (t, e) =
   | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "]" ^
                             " = " ^ string_of_sexpr e2
   | SArrAccess(s,e) -> s ^ "[" ^ string_of_sexpr e ^ "]"
-  | SNoteAssign(id, pitch, duration) -> "Note " ^ id ^ " = " ^ "Note( " ^ string_of_sexpr pitch ^ ", " ^ string_of_sexpr duration ^ ")"
+  | SNoteAssign(id, pitch) -> "Note " ^ id ^ " = " ^ "Note(" ^ pitch ^ ")"
   | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
-  | SPhraseAdd(id, note) -> id ^ ".add(" ^ string_of_sexpr note ^ ")"
-  | SSongMeasure(id, value) -> id ^ ".measure(" ^ string_of_sexpr value ^ ")"
+  | SPhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr note ^ ")"
+  | SSongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr phrase ^ ")"
   | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
   | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
   | SSongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_sexpr value
