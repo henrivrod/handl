@@ -41,7 +41,6 @@ let translate (globals, functions) =
       A.PrimitiveType(A.Int)   -> i32_t
     | A.PrimitiveType(A.Bool)  -> i1_t
     | A.PrimitiveType(A.Float)  -> float_t
-    | A.PrimitiveType(A.Char)  -> i8_t
     | A.PrimitiveType(A.String)  -> str_t
     | A.PrimitiveType(A.Note)  -> str_t 
     | _                        -> raise (Failure "Unmatched type in ltype_of_typ")
@@ -163,7 +162,6 @@ let translate (globals, functions) =
         SLiteral i  -> L.const_int i32_t i  
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SFloatLit f -> L.const_float float_t f
-      | SChrLit l -> L.const_char_of_string i8_t l (*NEEDS TO BE FIXED*)
       | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
       | SNewArr (t, e) -> let len = build_expr builder e
                                   in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
@@ -171,7 +169,6 @@ let translate (globals, functions) =
         let newList = List.map (fun e-> build_expr builder e) a in
         let arr = Array.of_list newList in
         L.const_array t arr
-      (*NEEDS TO BE FIXED*)
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
