@@ -184,7 +184,7 @@ let translate (globals, functions) =
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
-      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in 
+      | SNoteAssign(n, p, s) -> let p' = build_expr builder p, s' = build_expr builder s in
         let noteLit = L.const_named_struct named_struct_note_t [|p' | s' |]  in 
         ignore(L.build_store noteLit (lookup n) builder); noteLit
       (*NEEDS TO BE FIXED*)
@@ -240,6 +240,9 @@ let translate (globals, functions) =
       | SPhraseAdd(id, idx, note) -> SArrayAssign(id, idx, note)
       | SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
       | SSongMeasure(id, measure) -> *)
+      | SCall ("print", [e]) ->
+              L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
+                "printf" builder
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
@@ -263,7 +266,7 @@ let translate (globals, functions) =
         SBlock sl -> List.fold_left build_stmt builder sl
       | SExpr e -> ignore(build_expr builder e); builder
       | SReturn e -> ignore(L.build_ret (build_expr builder e) builder); builder
-      | SIf (predicate, then_stmt, else_stmt) ->
+      | SIfElse (predicate, then_stmt, else_stmt) ->
         let bool_val = build_expr builder predicate in
 
         let then_bb = L.append_block context "then" the_function in

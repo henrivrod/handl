@@ -161,17 +161,19 @@ let check (globals, functions) =
           in
           (t, SBinop((t1, e1'), op, (t2, e2')))
         else raise (Failure err)
-      | NoteAssign(var, e1, e2) as ex -> 
+      | NoteAssign(var, e1, e2) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let (e2_type, e2') as sexpr2 = check_expr e2 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_note_assign lt e1_type e2_type err), SNoteAssign(var, sexpr1, sexpr2))
+        (*NEEDS TO BE CHANGED*)
       | PhraseAdd(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let err = "illegal assignment " ^ string_of_expr ex
         in ((check_phrase_add lt e1_type err), SPhraseAdd(var, sexpr1))
+        (*NEEDS TO BE CHANGED*)
       | SongTempo(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
