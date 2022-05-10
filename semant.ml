@@ -69,14 +69,20 @@ let check (globals, functions) =
       if lvaluet = rvaluet then lvaluet else raise (Failure err)
     in
 
-    (*
     let check_note_assign lvaluet e1t err =
       if e1t = PrimitiveType(String) && lvaluet = PrimitiveType(Note) then lvaluet else raise (Failure(err))
     in
-    *)
+
+    let check_phrase_assign lvaluet err =
+      if lvaluet = PhraseType then lvaluet else raise (Failure(err))
+    in
 
     let check_phrase_add lvaluet e1t e2t err =
       if e1t = PrimitiveType(Int) && e2t = PrimitiveType(Note) && lvaluet = PhraseType then lvaluet else raise (Failure(err))
+    in
+
+    let check_song_assign lvaluet err =
+      if lvaluet = SongType then lvaluet else raise (Failure(err))
     in
 
     let check_song_tempo lvaluet e1t err = 
@@ -165,18 +171,25 @@ let check (globals, functions) =
           in
           (t, SBinop((t1, e1'), op, (t2, e2')))
         else raise (Failure err)
-      (*| NoteAssign(var, e1) as ex ->
+      | NoteAssign(var, e1) as ex ->
         let lt = type_of_identifier var in
-        let (e1_type, e1') = check_expr e1 in
-        let err = "illegal assignment " ^ string_of_expr ex
+        let (e1_type, e1') as sexpr1 = check_expr e1 in
+        let err = "illegal note assignment " ^ string_of_expr ex
         in ((check_note_assign lt e1_type err), SNoteAssign(var, sexpr1))
-      *)
+      | PhraseAssign(var) as ex ->
+        let lt = type_of_identifier var in
+        let err = "illegal phrase assignment " ^ string_of_expr ex
+        in ((check_phrase_assign lt err), SPhraseAssign(var))
       | PhraseAdd(var, e1, e2) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in
         let (e2_type, e2') as sexpr2 = check_expr e2 in
-        let err = "illegal assignment " ^ string_of_expr ex
+        let err = "illegal phrase add " ^ string_of_expr ex
         in ((check_phrase_add lt e1_type e2_type err), SPhraseAdd(var, sexpr1, sexpr2))
+      | SongAssign(var) as ex ->
+          let lt = type_of_identifier var in
+          let err = "illegal song assignment " ^ string_of_expr ex
+          in ((check_song_assign lt err), SSongAssign(var))
       | SongTempo(var, e1) as ex ->
         let lt = type_of_identifier var in
         let (e1_type, e1') as sexpr1 = check_expr e1 in

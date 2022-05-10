@@ -68,11 +68,11 @@ let rec string_of_sexpr (t, e) =
   | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "]" ^
                             " = " ^ string_of_sexpr e2
   | SArrAccess(s,e) -> s ^ "[" ^ string_of_sexpr e ^ "]"
-  | SNoteAssign(id, pitch) -> "Note " ^ id ^ " = " ^ "Note(" ^ string_of_sexpr pitch ^ ")"
-  | SPhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
+  | SNoteAssign(id, pitch) -> id ^ " = " ^ "Note(" ^ string_of_sexpr pitch ^ ")"
+  | SPhraseAssign(id) -> id ^ " = Phrase()"
   | SPhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr note ^ ")"
   | SSongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr phrase ^ ")"
-  | SSongAssign(id) -> "Song " ^ id ^ " = Song()"
+  | SSongAssign(id) -> id ^ " = Song()"
   | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
   | SSongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_sexpr value
   | SSongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_sexpr value

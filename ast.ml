@@ -79,6 +79,8 @@ let string_of_prim = function
 let rec string_of_typ = function
   PrimitiveType(t) -> string_of_prim t
   | PrimArray(t) ->  "Array <" ^ string_of_prim t ^ ">"
+  | PhraseType -> "Phrase"
+  | SongType -> "Song"
   | _ -> failwith "Error"
 
 let rec string_of_expr = function
@@ -98,10 +100,10 @@ let rec string_of_expr = function
   | ArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "]" ^
                             " = " ^ string_of_expr e2
   | ArrAccess(s,e) -> s ^ "[" ^ string_of_expr e ^ "]"
-  | NoteAssign(id, pitch) -> "Note " ^ id ^ " = " ^ "Note(" ^ string_of_expr pitch ^ ")"
-  | PhraseAssign(id) -> "Phrase " ^ id ^ " = Phrase()"
+  | NoteAssign(id, pitch) -> id ^ " = " ^ "Note(" ^ string_of_expr pitch ^ ")"
+  | PhraseAssign(id) -> id ^ " = Phrase()"
   | PhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_expr idx ^ ", " ^ string_of_expr note ^ ")"
-  | SongAssign(id) -> "Song " ^ id ^ " = Song()"
+  | SongAssign(id) -> id ^ " = Song()"
   | SongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_expr idx ^ ", " ^ string_of_expr phrase ^ ")"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
