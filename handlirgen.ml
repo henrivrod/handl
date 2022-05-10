@@ -56,6 +56,7 @@ let translate (globals, functions) =
     let global_var m (t, n) =
       let init = match t with 
           A.PrimitiveType(A.Float) -> L.const_float (ltype_of_primitive_typ t) 0.0
+          | A.PrimArray(t) -> L.const_array (ltype_of_primitive_typ (A.PrimitiveType(t))) [||]
           | _ -> L.const_int (ltype_of_typ t) 0
       in StringMap.add n (L.define_global n init the_module) m in
     List.fold_left global_var StringMap.empty globals in
