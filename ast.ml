@@ -131,8 +131,6 @@ and string_of_if_else (e, s1, s2)=
         match s2 with
             Expr(expr)-> "\n" ^ string_of_stmt s2
             | Block(stmts)->"\n" ^ string_of_stmt(s2)
-            | IfElse(e1,s3,s4)->string_of_stmt(s2)
-            | If(e1,s3) ->string_of_stmt(s2)
             | _ -> failwith "Error"
     in
     "if (" ^ string_of_expr e ^ ")\n" ^

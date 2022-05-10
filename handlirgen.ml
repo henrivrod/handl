@@ -236,9 +236,15 @@ in
         make_array (ltype_of_typ (A.PhraseType)) (len) builder
       | SSongMeasure(id, idx, phrase) -> let t = A.SongType in 
         build_expr builder (t, SArrAssign(id, idx, phrase))
-      | SCall ("print", [e]) ->
-              L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
-                "printf" builder
+      | SCall ("print", [e]) | SCall ("printb", [e]) ->
+      	      L.build_call printf_func [| int_format_str ; (expr builder e) |]
+      	      "printf" builder
+      | SCall ("printf", [e]) ->
+      	      L.build_call printf_func [| float_format_str ; (expr builder e) |]
+      	      "printf" builder
+      | SCall ("prints", [e]) ->
+          L.build_call printf_func [| str_format_str ; (expr builder e) |]
+          "printf" builder
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in

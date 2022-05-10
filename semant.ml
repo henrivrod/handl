@@ -27,11 +27,16 @@ let check (globals, functions) =
 
   (* Collect function declarations for built-in functions: no bodies *)
   let built_in_decls =
-    StringMap.add "print" {
-      rtyp = PrimitiveType(Int);
-      fname = "print";
-      formals = [(PrimitiveType(Int), "x")];
-      locals = []; body = [] } StringMap.empty
+    let add_bind map (name, tys) = StringMap.add name {
+          typ = PrimitiveType(Void);
+          fname = name;
+          formals = tys;
+          locals = []; body = [] } map
+        in List.fold_left add_bind StringMap.empty
+                                 [ ("print", [(PrimitiveType(Int), "x")]);
+                                     ("printb", [(PrimitiveType(Bool), "x")]);
+                                     ("printf", [(PrimitiveType(Float), "x")]);
+                                   ("prints", [(PrimitiveType(String), "x")]);]
   in
 
   (* Add function name to symbol table *)
