@@ -49,6 +49,7 @@ let translate (globals, functions) =
   let ltype_of_typ = function
       A.PrimitiveType(t) -> ltype_of_primitive_typ(A.PrimitiveType(t))
       | A.PrimArray(t) -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(t)))
+      | A.PhraseType -> L.pointer_type (ltype_of_primitive_typ (A.PrimitiveType(A.Note)))
   in
 
   (* Create a map of global variables after creating each *)
@@ -222,9 +223,14 @@ let translate (globals, functions) =
             L.build_load arr_ptr arr_name builder in
         let arr_gep = L.build_in_bounds_gep arr_ptr_load [|idx|] llname builder in
           L.build_load arr_gep (llname ^ "_load") builder
-      (*| SPhraseAssign(id) -> SNewArr(A.Note, SLiteral(8))
-      | SPhraseAdd(id, idx, note) -> SArrayAssign(id, idx, note)
-      | SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
+      | SPhraseAssign(id) -> let t = A.PhraseType in
+          let len = (A.PrimitiveType(A.Int), SLiteral(8)) in
+          let newArrSexpr = SNewArr(A.Note, len) in
+          build_expr builder (t, newArrSexpr)
+      | SPhraseAdd(id, idx, note) -> 
+        let t = A.PhraseType in 
+        build_expr builder (t, SArrAssign(id, idx, note))
+      (*| SSongAssign(id) -> SNewArr((*Figure out type*), SLiteral(8))
       | SSongMeasure(id, measure) -> *)
       | SCall ("print", [e]) ->
               L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
