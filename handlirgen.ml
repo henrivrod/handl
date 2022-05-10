@@ -227,7 +227,8 @@ in
       | SPhraseAssign(id) -> let t = A.PhraseType in
           let len = (A.PrimitiveType(A.Int), SLiteral(8)) in
           let newArrSexpr = SNewArr(A.Note, len) in
-          build_expr builder (t, newArrSexpr)
+          let e = build_expr builder (t, newArrSexpr) in
+          ignore(L.build_store e (lookup id) builder); e
       | SPhraseAdd(id, idx, note) -> 
         let t = A.PhraseType in 
         build_expr builder (t, SArrAssign(id, idx, note))
