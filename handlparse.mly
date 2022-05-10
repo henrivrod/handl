@@ -60,6 +60,7 @@ primitive_typ:
   | FLOAT                   { Float }
   | CHAR                    { Char }
   | STRING                  { String }
+  | NOTE                    { Note   }
 
 handl_typ_rule:
   PHRASE                    { PhraseType }
@@ -129,7 +130,7 @@ expr_rule:
   | LPAREN expr_rule RPAREN                     { $2                    }
   | ID LBRACK expr_rule RBRACK ASSIGN expr_rule { ArrAssign($1, $3, $6) }
   | ID LBRACK expr_rule RBRACK                  { ArrAccess($1, $3)     }
-  | NOTE ID ASSIGN NOTE LPAREN expr_rule RPAREN           { NoteAssign($2, $6) }
+  | ID ASSIGN NOTE LPAREN expr_rule RPAREN           { NoteAssign($1, $5) }
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ADDNOTE LPAREN expr_rule COMMA expr_rule RPAREN            { PhraseAdd($1, $4, $6)    }
   | ID MEASURE LPAREN expr_rule COMMA expr_rule RPAREN            { SongMeasure($1, $4, $6)  } 
