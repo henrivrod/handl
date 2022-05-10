@@ -56,7 +56,6 @@ rule token = parse
 | "in" { IN }
 | "new" { NEW }
 | '"'((digit | letter)* as str)'"'  { STRLIT(str) }
-| '''((digit | letter) as chr)'''   { CHRLIT(chr) }
 | digit+ as lem  { LITERAL(int_of_string lem) }
 | digit+ '.' digit+ ( ['e' 'E'] ['+' '-']? digit+ )? as lem {FLIT(float_of_string lem) }
 | letter (digit | letter | '_')* as lem { ID(lem) }
