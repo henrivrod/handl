@@ -1,21 +1,29 @@
-int main() {
+/*int main() {
 	Array<Note> x;
 	Note n;
 	n = Note("A5");
 	x = new Array<Note>[5];
-	x[2] = n;
+	x[0] = n;
+	x[1] = n;
 	return 0;
 }
-/*
+*/
 
 int main() {
 	Phrase x;
 	Note n;
-	n = Note("A5");
+	Song s;
+	s = Song();
+	n = Note("A3");
 	x = Phrase();
-	x.add(2, n); 
+	x.add(0, n); 
+	x.add(6, n);
+	x.add(2, n);
+	s.measure(0, x);
+	s.measure(1, x);
+	s.play();
 	return 0;
-}*/
+}
  /* 1208 breaks, 1207 works 8*/
 /*
 int main() {
