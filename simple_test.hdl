@@ -1,0 +1,35 @@
+int main() {
+	Array<Note> x;
+	Note n;
+	n = Note("A5");
+	x = new Array<Note>[5];
+	x[2] = n;
+	return 0;
+}
+/*
+
+int main() {
+	Phrase x;
+	Note n;
+	n = Note("A5");
+	x = Phrase();
+	x.add(2, n); 
+	return 0;
+}*/
+ /* 1208 breaks, 1207 works 8*/
+/*
+int main() {
+	Phrase p;
+	Note n;
+	n = Note("A3");
+	p = Phrase();
+	p.add(0, n);
+}
+*/
+/*
+int main() {
+	Array<String> x;
+	x = new Array<String>[5];
+
+	x[0] = "test";
+}*/
