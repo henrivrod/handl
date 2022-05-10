@@ -39,7 +39,6 @@ int play_song(Song s1)
     //         //fprintf(stderr, "%s\n", (*s1)[i][j]);
     //     }
     // }
-    fprintf(stderr, "Here1\n");
     for(int i=0; i < num_phrases; i++){
         
         
@@ -77,16 +76,13 @@ int play_song(Song s1)
             B[n] = '-';
             e[n] = '-';
         }
-            fprintf(stderr, "Here2\n");
 
         for(int j=0; j < num_notes; j++){
             // printf("%s", s1.measures[i].notes[j].pitch);
             // printf("\n");
 
             char* cur = (s1)[i][j];
-                fprintf(stderr, "Here3\n");
 
-            printf("Current string: %s", cur);
             //High e string
             if(strcmp(cur,"E3")==0){
                 e[3*j + 3] = '0';
@@ -195,7 +191,6 @@ int play_song(Song s1)
         printf("%s\n",A);
         printf("%s\n",E);
         printf("/////////////\n");
-            fprintf(stderr, "Here4\n");
 
        
     }
