@@ -10,7 +10,6 @@ type expr =
   | FloatLit of float
   | StrLit of string
   | NewArr of prim * expr
-  | ArrLit of expr list
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -23,9 +22,6 @@ type expr =
   | SongMeasure of string * expr * expr
   | SongAssign of string
   | Call of string * expr list
-  | SongTempo of string * expr
-  | SongBars of string * expr
-  | SongTimeSignature of string * expr
   | SongPlay of string
  
 
@@ -35,7 +31,6 @@ type stmt =
   | IfElse of expr * stmt * stmt
   | If of expr * stmt
   | While of expr * stmt
-  | ForMeasure of int * int * expr * stmt
   | For of expr * expr * expr * stmt
   | Return of expr
 
@@ -87,7 +82,6 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | StrLit(l) -> "\"" ^ l ^ "\""
   | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_expr l ^ "]"
-  | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
   | Binop(e1, o, e2) ->
@@ -103,9 +97,6 @@ let rec string_of_expr = function
   | SongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_expr idx ^ ", " ^ string_of_expr phrase ^ ")"
   | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | SongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_expr value
-  | SongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_expr value
-  | SongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_expr value
   | SongPlay(id) -> id ^ ".play()"
 
 and string_of_arr l =
@@ -119,7 +110,6 @@ let rec string_of_stmt = function
   | IfElse(e, s1, s2) ->  string_of_if_else(e,s1,s2)
   | If(e, s) -> string_of_if(e,s)
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
-  | ForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | For(e1, e2, e3, s) -> "for (" ^ string_of_expr e1 ^ "; " ^ string_of_expr e2 ^ "; " ^ string_of_expr e3 ^ "; " ^ string_of_stmt s
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
 and string_of_if_else (e, s1, s2)=

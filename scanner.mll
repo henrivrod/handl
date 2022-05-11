@@ -46,14 +46,9 @@ rule token = parse
 | "Note" { NOTE }
 | "Phrase" { PHRASE }
 | ".add" { ADDNOTE }
-| ".tempo" { TEMPO }
 | ".play()" { PLAY }
-| ".bars" { BARS }
 | ".measure" { MEASURE }
-| ".timeSignature" { TIMESIGNATURE }
 | "Song" { SONG }
-| "through" { THROUGH }
-| "in" { IN }
 | "new" { NEW }
 | '"'((ascii)* as str)'"'  { STRLIT(str) }
 | digit+ as lem  { LITERAL(int_of_string lem) }

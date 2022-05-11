@@ -8,10 +8,10 @@ open Ast
 %token PLUS MINUS TIMES DIVISION
 %token EQ NEQ LT GT AND OR NOT LEQ GEQ
 %token IF ELSE WHILE INT BOOL FLOAT STRING NOTE
-%token FOR THROUGH IN NEW
+%token FOR NEW
 %token RETURN COMMA ARRAY PHRASE SONG
 %token ADDNOTE MEASURE
-%token TIMESIGNATURE TEMPO BARS PLAY 
+%token PLAY
 %token <int> LITERAL
 %token <bool> BLIT
 %token <float> FLIT
@@ -95,7 +95,6 @@ stmt_rule:
   | IF LPAREN expr_rule RPAREN stmt_rule ELSE stmt_rule        { IfElse ($3, $5, $7)  }
   | IF LPAREN expr_rule RPAREN stmt_rule                       { If ($3, $5)}
   | WHILE LPAREN expr_rule RPAREN stmt_rule                             { While ($3,$5)    }
-  | FOR LPAREN MEASURE LITERAL THROUGH LITERAL IN expr_rule RPAREN stmt_rule     { ForMeasure($4, $6, $8, $10) }
   | FOR LPAREN expr_rule SEMI expr_rule SEMI expr_rule RPAREN stmt_rule  { For($3, $5, $7, $9) }
   | RETURN expr_rule SEMI                        { Return $2      }
 
@@ -105,7 +104,6 @@ expr_rule:
   | FLIT                                        { FloatLit $1           }
   | STRLIT                                      { StrLit $1             }
   | NEW ARRAY LT primitive_typ GT LBRACK expr_rule RBRACK {NewArr($4,$7)}
-  | LBRACK array_opt RBRACK                         { ArrLit $2             }
   | ID                                          { Id $1                 }
   | expr_rule PLUS expr_rule                    { Binop ($1, Add, $3)   }
   | expr_rule MINUS expr_rule                   { Binop ($1, Sub, $3)   }
@@ -128,9 +126,6 @@ expr_rule:
   | ID ASSIGN PHRASE LPAREN RPAREN       { PhraseAssign $1       }
   | ID ADDNOTE LPAREN expr_rule COMMA expr_rule RPAREN            { PhraseAdd($1, $4, $6)    }
   | ID MEASURE LPAREN expr_rule COMMA expr_rule RPAREN            { SongMeasure($1, $4, $6)  } 
-  | ID TEMPO ASSIGN expr_rule                          {SongTempo($1, $4)}
-  | ID BARS ASSIGN expr_rule                          {SongBars($1, $4)}
-  | ID TIMESIGNATURE ASSIGN expr_rule                          {SongTimeSignature($1, $4)}
   | ID ASSIGN SONG LPAREN RPAREN       { SongAssign $1       }
   | ID LPAREN array_opt RPAREN { Call ($1, $3)  }
   | ID PLAY { SongPlay($1) }

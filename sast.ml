@@ -9,7 +9,6 @@ and sx =
   | SFloatLit of float
   | SStrLit of string
   | SNewArr of prim * sexpr
-  | SArrLit of sexpr list
   | SId of string
   | SNot of sexpr
   | SBinop of sexpr * bop * sexpr
@@ -22,9 +21,6 @@ and sx =
   | SSongMeasure of string * sexpr * sexpr
   | SSongAssign of string
   | SCall of string * sexpr list
-  | SSongTempo of string * sexpr
-  | SSongBars of string * sexpr
-  | SSongTimeSignature of string * sexpr
   | SSongPlay of string
  
 
@@ -34,7 +30,6 @@ type sstmt =
   | SIfElse of sexpr * sstmt * sstmt
   | SIf of sexpr * sstmt
   | SWhile of sexpr * sstmt
-  | SForMeasure of int * int * sexpr * sstmt
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SReturn of sexpr
 
@@ -58,7 +53,6 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(false) -> "false"
   | SStrLit(l) -> "\"" ^ l ^ "\""
   | SNewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_sexpr l ^ "]"
-  | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | SId(s) -> s
   | SNot(e) -> "not " ^ string_of_sexpr e
   | SBinop(e1, o, e2) ->
@@ -72,10 +66,7 @@ let rec string_of_sexpr (t, e) =
   | SPhraseAdd(id, idx, note) -> id ^ ".add(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr note ^ ")"
   | SSongMeasure(id, idx, phrase) -> id ^ ".measure(" ^ string_of_sexpr idx ^ ", " ^ string_of_sexpr phrase ^ ")"
   | SSongAssign(id) -> id ^ " = Song()"
-  | SSongTempo(id, value) -> id ^ ".tempo" ^ " = " ^ string_of_sexpr value
-  | SSongBars(id, value) -> id ^ ".bars" ^ " = " ^ string_of_sexpr value
   | SSongPlay(id) -> id ^ ".play()"
-  | SSongTimeSignature(id, value) -> id ^ ".timeSignature" ^ " = " ^ string_of_sexpr value
   | SCall(f, el) ->
             f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
       ) ^ ")"
@@ -91,7 +82,6 @@ let rec string_of_sstmt = function
   | SIfElse(e, s1, s2) ->  string_of_sif_else(e,s1,s2)
   | SIf(e, s) -> string_of_sif(e,s)
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
-  | SForMeasure(i1, i2, e, s) -> "for (measure " ^ string_of_int i1 ^ " through " ^ string_of_int i2 ^ " in " ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
   | SFor(e1, e2, e3, s) -> "for (" ^ string_of_sexpr e1 ^ "; " ^ string_of_sexpr e2 ^ "; " ^ string_of_sexpr e3 ^ "; " ^ string_of_sstmt s
 and string_of_sif_else (e, s1, s2)=
     let part1 =

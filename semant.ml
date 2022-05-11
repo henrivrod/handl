@@ -104,14 +104,6 @@ let check (globals, functions) =
       if e1t = PrimitiveType(Int) && e2t = PhraseType && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
 
-    let check_song_tempo lvaluet e1t err = 
-      if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
-    in
-
-    let check_song_bars lvaluet e1t err = 
-      if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
-    in
-
     let check_song_time_signature lvaluet e1t err = 
       if e1t = PrimitiveType(Int) && lvaluet = SongType then lvaluet else raise (Failure(err))
     in
@@ -151,12 +143,6 @@ let check (globals, functions) =
         let checked = check_expr l in
         if fst checked <> PrimitiveType(Int) then raise (Failure (string_of_expr(l) ^ " is not an int and cannot be used as an array length"))
         else (PrimArray(t), SNewArr(t,checked))
-      | ArrLit(a) ->
-        let first = fst (check_expr (List.hd a)) in
-        let err = "Array element incompatible" in
-        let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
-            else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
-        in (PrimArray(type_of_prim first), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
@@ -212,25 +198,10 @@ let check (globals, functions) =
         let (e2_type, e2') as sexpr2 = check_expr e2 in
         let err = "illegal song measure add " ^ string_of_expr ex
         in ((check_song_measure lt e1_type e2_type err), SSongMeasure(var, sexpr1, sexpr2))
-      | SongTempo(var, e1) as ex ->
-        let lt = type_of_identifier var in
-        let (e1_type, e1') as sexpr1 = check_expr e1 in
-        let err = "illegal assignment " ^ string_of_expr ex
-        in ((check_song_tempo lt e1_type err), SSongTempo(var, sexpr1))
-      | SongBars(var, e1) as ex ->
-          let lt = type_of_identifier var in
-          let (e1_type, e1') as sexpr1 = check_expr e1 in
-          let err = "illegal assignment " ^ string_of_expr ex
-          in ((check_song_bars lt e1_type err), SSongBars(var, sexpr1))
       | SongPlay(id) as ex -> 
         let lt = type_of_identifier id in
         if lt <> SongType then raise (Failure ("invalid call: " ^ id ^ " is not a song" ))
         else (SongType, SSongPlay(id))
-      | SongTimeSignature(var, e1) as ex ->
-        let lt = type_of_identifier var in
-        let (e1_type, e1') as sexpr1 = check_expr e1 in
-        let err = "illegal assignment " ^ string_of_expr ex
-        in ((check_song_time_signature lt e1_type err), SSongTimeSignature(var, sexpr1))
       | Call(fname, args) as call ->
           let fd = find_func fname in
           let param_length = List.length fd.formals in
@@ -289,7 +260,6 @@ let check (globals, functions) =
       | While(e, st) ->
         SWhile(check_bool_expr e, check_stmt st)
       | For(e1, e2, e3, s1) -> SFor(check_expr e1, check_expr e2, check_expr e3, check_stmt s1)
-      | ForMeasure(i1, i2, e1, s1) -> SForMeasure(i1, i2, check_expr e1, check_stmt s1)
       | Return e ->
         let (t, e') = check_expr e in
         if t = func.rtyp then SReturn (t, e')

@@ -1,10 +1,19 @@
-# HANDL
-HANDL is a high-level language inspired by the paradigms of GO. Our interest in creating HANDL was to build a language with as much of the English language as possible, so English speakers with little coding experience can most easily learn. The specific group we are focusing on is musicians, hence the Note Declaring attribute. We want musicians to see in HANDL something similar to what they see in their performance and compositional work.
+# HANDL Intro
+HANDL is a high-level language inspired by the paradigms of GO. Our interest in creating HANDL was to build a language that would not be too complex for novel users to pick up. The specific group we are focusing on is musicians, and so we picked syntax that is similar to what musicians use: notes, phrases, songs, measures, etc.  We want musicians to see in HANDL something similar to what they see in their performance and compositional work. This way, they can be most comfortable learning about the syntax and norms of a programming language and also can create something truly interesting with it. They will be able to easily create guitar tabs (notation for playing guitar) using our code. Using HANDL, musicians could come up with some exciting algorithmically-generated tabs and delve into the world of computer-generated music, or even just use it for the creation of simple guitar tabs. Code will be converted by HANDL from syntax into human-readable Guitar tabs. In this way, HANDL will function somewhat as a DSL but will also be able to handle the average functions of most programming languages.
+
+## File Structure
+-  `scanner.mll`: scanner
+-  `handlparse.mly`: parser
+-  `ast.ml`: abstract syntax tree (AST)
+-  `semant.ml`: semantic checking
+-  `sast.ml`: semantically-checked AST
+-  `handlirgen.ml`: IR generator
 
 
-## Hello World Front-end
-At this stage in our development of Handl, we have provided most of the Front-end functionality for the language. We have yet to include several language specific functions that we plan on implementing when we get a better grasp of the back end. Although subject to change, these functions should include: 
+-   tests folder: has all our tests
 
+-   `demo.sh` : script for compiling a test
+-   `tests.sh` : script for compiling all tests in tests folder
 ```
 .add(), .timeSignature, .bars, .tempo, .measure(), .play(), and .save()
 ```

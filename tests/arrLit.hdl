@@ -1,8 +1,0 @@
-int main(){
-Array<int> arr;
-arr= new Array<int>[5];
-arr[1]=1;
-if(arr[1]==1){
-print(1);
-}
-}
