@@ -199,7 +199,7 @@ int play_song(Song s1)
         printf("%s\n",D);
         printf("%s\n",A);
         printf("%s\n",E);
-        printf("/////////////\n");
+        printf("//////////////////////////\n");
 
        
     }
