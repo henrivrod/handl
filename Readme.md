@@ -3,17 +3,12 @@ HANDL is a high-level language inspired by the paradigms of GO. Our interest in 
 
 ## File Structure
 -  `scanner.mll`: scanner
-
-            |
 -  `handlparse.mly`: parser
-            |
 -  `ast.ml`: abstract syntax tree (AST)
-            |
 -  `semant.ml`: semantic checking
-            |
 -  `sast.ml`: semantically-checked AST
-            |
 -  `handlirgen.ml`: IR generator
+
 
 -   tests folder: has all our tests
 
