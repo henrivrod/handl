@@ -174,13 +174,9 @@ in
       | SStrLit l -> L.build_global_stringptr (l ^ "\x00") "str_ptr" builder
       | SNewArr (t, e) -> let len = build_expr builder e
                                   in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
-      | SArrLit (a) -> let t = ltype_of_primitive_typ (fst (List.hd a)) in
-        let newList = List.map (fun e-> build_expr builder e) a in
-        let arr = Array.of_list newList in
-        L.const_array t arr
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
-        ignore(L.build_store e' (lookup s) builder); e'
+               ignore(L.build_store e' (lookup s) builder); e')
       | SNoteAssign(s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.PrimitiveType(Float), _) as e1, op, e2) ->

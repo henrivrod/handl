@@ -9,7 +9,6 @@ and sx =
   | SFloatLit of float
   | SStrLit of string
   | SNewArr of prim * sexpr
-  | SArrLit of sexpr list
   | SId of string
   | SNot of sexpr
   | SBinop of sexpr * bop * sexpr
@@ -54,7 +53,6 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(false) -> "false"
   | SStrLit(l) -> "\"" ^ l ^ "\""
   | SNewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_sexpr l ^ "]"
-  | SArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | SId(s) -> s
   | SNot(e) -> "not " ^ string_of_sexpr e
   | SBinop(e1, o, e2) ->

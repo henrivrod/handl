@@ -10,7 +10,6 @@ type expr =
   | FloatLit of float
   | StrLit of string
   | NewArr of prim * expr
-  | ArrLit of expr list
   | Id of string
   | Not of expr
   | Binop of expr * bop * expr
@@ -83,7 +82,6 @@ let rec string_of_expr = function
   | BoolLit(false) -> "false"
   | StrLit(l) -> "\"" ^ l ^ "\""
   | NewArr(t,l) -> "new Array<" ^ string_of_prim t ^ "> [" ^ string_of_expr l ^ "]"
-  | ArrLit(a) -> "[" ^ string_of_arr a ^ "]"
   | Id(s) -> s
   | Not(e) -> "not " ^ string_of_expr e
   | Binop(e1, o, e2) ->

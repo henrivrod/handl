@@ -143,12 +143,6 @@ let check (globals, functions) =
         let checked = check_expr l in
         if fst checked <> PrimitiveType(Int) then raise (Failure (string_of_expr(l) ^ " is not an int and cannot be used as an array length"))
         else (PrimArray(t), SNewArr(t,checked))
-      | ArrLit(a) ->
-        let first = fst (check_expr (List.hd a)) in
-        let err = "Array element incompatible" in
-        let newA = List.map (fun a -> let checked = check_expr(a) in if (first = fst checked) then checked
-            else raise (Failure (err ^ ": " ^ string_of_expr(a) ^ " is not " ^ string_of_typ(first)))) a
-        in (PrimArray(type_of_prim first), SArrLit(newA))
       | Assign(var, e) as ex ->
         let lt = type_of_identifier var
         and (rt, e') = check_expr e in
