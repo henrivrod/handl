@@ -8,39 +8,35 @@ HANDL is a high-level language inspired by the paradigms of GO. Our interest in 
 -  `semant.ml`: semantic checking
 -  `sast.ml`: semantically-checked AST
 -  `handlirgen.ml`: IR generator
-
-
 -   tests folder: has all our tests
-
 -   `demo.sh` : script for compiling a test
 -   `tests.sh` : script for compiling all tests in tests folder
+
+## Features
+
+
+### Team Members
+- Henri Vrod (Project Manager): Ensured team-members were on top of each of their responsibilitys and guaranteed timely deliverables. Led creation of the Semantic checker. Coded implementation for If, Else, booleans, Logical Operators and Arrays in each level of the architecture. Set up meetings and pair-programming sessions. Made many of the basic testers.
+- Pierre Rodgers (Language Guru):
+- Max Acebal (System Architect):
+- Kyle Christopher (Tester):
+
+### Building HANDL
+
 ```
-.add(), .timeSignature, .bars, .tempo, .measure(), .play(), and .save()
-```
-We will also need to work further on our semantic checker and sast file. We have the barebones of them but still need to work on fixing them up so they actually work.
-
-### Build the HANDL parser
-
-```
-ocamlbuild test.native
+ocamlbuild -use-ocamlfind handl.native -package llvm
+gcc -c handlmusic.c
 ```
 
-### Run the HANDL parser
+### Testing HANDL
+
 ```
-./test.native
+sh tests.sh
+./tests_results/<TEST_NAME>.exe
 ```
-
-### Compiler files
--  `ast.ml`: abstract syntax tree (AST)
--  `scanner.mll`: scanner
--  `handlparse.mly`: parser
--  `sast.ml`: definition of the semantically-checked AST (IN PROGRESS)
--  `semant.ml`: semantic checking (IN PROGRESS)
-
-### Other files
-
-- `test.ml`: top-level file to test and run the scanner/parser
-- `test2.ml`: the file to test the semantic checker
-- 'helloWorld.hdl': example text to input to parser
-
+OR
+```
+sh demo.sh ./tests/<TEST_NAME>.handl
+<TEST_NAME>.exe
+```
 
