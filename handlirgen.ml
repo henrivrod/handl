@@ -176,7 +176,7 @@ in
                                   in make_array (ltype_of_primitive_typ (A.PrimitiveType(t))) (len) builder
       | SId(s) -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
-               ignore(L.build_store e' (lookup s) builder); e')
+               ignore(L.build_store e' (lookup s) builder); e'
       | SNoteAssign(s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
       | SBinop ((A.PrimitiveType(Float), _) as e1, op, e2) ->
