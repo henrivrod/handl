@@ -3,6 +3,7 @@ HANDL is a high-level language inspired by the paradigms of GO. Our interest in 
 
 ## File Structure
 -  `scanner.mll`: scanner
+
             |
 -  `handlparse.mly`: parser
             |
@@ -16,8 +17,8 @@ HANDL is a high-level language inspired by the paradigms of GO. Our interest in 
 
 -   tests folder: has all our tests
 
--   demo.sh : script for compiling a test
--   tests.sh : script for compiling all tests in tests folder
+-   `demo.sh` : script for compiling a test
+-   `tests.sh` : script for compiling all tests in tests folder
 ```
 .add(), .timeSignature, .bars, .tempo, .measure(), .play(), and .save()
 ```
