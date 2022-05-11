@@ -20,17 +20,17 @@ entry:
   %n1 = alloca i8*, align 8
   %n2 = alloca i8*, align 8
   %s = alloca i8***, align 8
-  %make_array = tail call i8* @malloc(i32 mul (i32 add (i32 mul (i32 ptrtoint (i8*** getelementptr (i8**, i8*** null, i32 1) to i32), i32 32), i32 12), i32 ptrtoint (i8* getelementptr (i8, i8* null, i32 1) to i32)))
+  %make_array = tail call i8* @malloc(i32 mul (i32 add (i32 mul (i32 ptrtoint (i8*** getelementptr (i8**, i8*** null, i32 1) to i32), i32 8), i32 12), i32 ptrtoint (i8* getelementptr (i8, i8* null, i32 1) to i32)))
   %body_ptr = getelementptr i8, i8* %make_array, i8 12
   %i32_ptr_t = bitcast i8* %body_ptr to i32*
   %meta_ptr = getelementptr i32, i32* %i32_ptr_t, i32 -3
   store i32 ptrtoint (i8*** getelementptr (i8**, i8*** null, i32 1) to i32), i32* %meta_ptr, align 4
   %i32_ptr_t1 = bitcast i8* %body_ptr to i32*
   %meta_ptr2 = getelementptr i32, i32* %i32_ptr_t1, i32 -2
-  store i32 add (i32 mul (i32 ptrtoint (i8*** getelementptr (i8**, i8*** null, i32 1) to i32), i32 32), i32 12), i32* %meta_ptr2, align 4
+  store i32 add (i32 mul (i32 ptrtoint (i8*** getelementptr (i8**, i8*** null, i32 1) to i32), i32 8), i32 12), i32* %meta_ptr2, align 4
   %i32_ptr_t3 = bitcast i8* %body_ptr to i32*
   %meta_ptr4 = getelementptr i32, i32* %i32_ptr_t3, i32 -1
-  store i32 32, i32* %meta_ptr4, align 4
+  store i32 8, i32* %meta_ptr4, align 4
   %make_array_ptr = bitcast i8* %body_ptr to i8***
   store i8*** %make_array_ptr, i8**** %s, align 8
   store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @str_ptr, i32 0, i32 0), i8** %n, align 8

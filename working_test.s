@@ -5,80 +5,83 @@
 _main:                                  ## @main
 	.cfi_startproc
 ## %bb.0:                               ## %entry
-	subq	$40, %rsp
-	.cfi_def_cfa_offset 48
-	movl	$268, %edi                      ## imm = 0x10C
-	callq	_malloc
-	leaq	12(%rax), %rcx
-	movabsq	$1151051235336, %rdx            ## imm = 0x10C00000008
-	movq	%rdx, (%rax)
-	movl	$32, 8(%rax)
-	movq	%rcx, 8(%rsp)
-	leaq	L_str_ptr(%rip), %rax
-	movq	%rax, 16(%rsp)
-	leaq	L_str_ptr.6(%rip), %rax
-	movq	%rax, 24(%rsp)
-	leaq	L_str_ptr.7(%rip), %rax
-	movq	%rax, 32(%rsp)
+	pushq	%rbx
+	.cfi_def_cfa_offset 16
+	subq	$48, %rsp
+	.cfi_def_cfa_offset 64
+	.cfi_offset %rbx, -16
 	movl	$76, %edi
 	callq	_malloc
 	leaq	12(%rax), %rcx
-	movabsq	$326417514504, %rdx             ## imm = 0x4C00000008
-	movq	%rdx, (%rax)
+	movabsq	$326417514504, %rbx             ## imm = 0x4C00000008
+	movq	%rbx, (%rax)
 	movl	$8, 8(%rax)
-	movq	%rcx, (%rsp)
-	movq	16(%rsp), %rcx
+	movq	%rcx, 16(%rsp)
+	leaq	L_str_ptr(%rip), %rax
+	movq	%rax, 24(%rsp)
+	leaq	L_str_ptr.6(%rip), %rax
+	movq	%rax, 32(%rsp)
+	leaq	L_str_ptr.7(%rip), %rax
+	movq	%rax, 40(%rsp)
+	movl	$76, %edi
+	callq	_malloc
+	leaq	12(%rax), %rcx
+	movq	%rbx, (%rax)
+	movl	$8, 8(%rax)
+	movq	%rcx, 8(%rsp)
+	movq	24(%rsp), %rcx
 	movq	%rcx, 12(%rax)
-	movq	24(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 8(%rcx)
 	movq	32(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 16(%rcx)
-	movq	16(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 24(%rcx)
-	movq	16(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 32(%rcx)
-	movq	16(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 40(%rcx)
-	movq	16(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 48(%rcx)
-	movq	24(%rsp), %rax
-	movq	(%rsp), %rcx
-	movq	%rax, 56(%rcx)
-	movq	(%rsp), %rax
-	movq	8(%rsp), %rcx
-	movq	%rax, (%rcx)
-	movq	(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 8(%rcx)
-	movq	(%rsp), %rax
+	movq	40(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 16(%rcx)
-	movq	(%rsp), %rax
+	movq	24(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 24(%rcx)
-	movq	(%rsp), %rax
+	movq	24(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 32(%rcx)
-	movq	(%rsp), %rax
+	movq	24(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 40(%rcx)
-	movq	(%rsp), %rax
+	movq	24(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 48(%rcx)
-	movq	(%rsp), %rax
+	movq	32(%rsp), %rax
 	movq	8(%rsp), %rcx
 	movq	%rax, 56(%rcx)
-	movq	8(%rsp), %rdi
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, (%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 8(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 16(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 24(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 32(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 40(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 48(%rcx)
+	movq	8(%rsp), %rax
+	movq	16(%rsp), %rcx
+	movq	%rax, 56(%rcx)
+	movq	16(%rsp), %rdi
 	xorl	%eax, %eax
 	callq	_play_song
 	xorl	%eax, %eax
-	addq	$40, %rsp
+	addq	$48, %rsp
+	popq	%rbx
 	retq
 	.cfi_endproc
                                         ## -- End function
