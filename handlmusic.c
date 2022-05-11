@@ -100,6 +100,15 @@ int play_song(Song s1)
             else if(strcmp(cur,"G#3")==0 || strcmp(cur,"Ab3")==0){
                 e[3*j + 3] = '4';
             }
+            else if(strcmp(cur,"A3")==0){
+                e[3*j + 3] = '5';
+            }
+            else if(strcmp(cur,"Bb3")==0 || strcmp(cur,"A#3")==0){
+                e[3*j + 3] = '6';
+            }
+            else if(strcmp(cur,"B3")==0){
+                e[3*j + 3] = '7';
+            }
             
             //B String
             else if(strcmp(cur,"B2")==0){
