@@ -153,7 +153,7 @@ let check (globals, functions) =
         let (t, e') = check_expr e
         in let err = "illegal not operator " ^ string_of_expr e
         in
-        if t = PrimitiveType(Bool) then (t, e')
+        if t = PrimitiveType(Bool) then (t, SNot(t, e'))
         else raise (Failure err)
       | Binop(e1, op, e2) as e ->
         let (t1, e1') = check_expr e1
