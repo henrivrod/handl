@@ -13,12 +13,16 @@ HANDL is a high-level language inspired by the paradigms of GO. Our interest in 
 -   `tests.sh` : script for compiling all tests in tests folder
 
 ## Features
-
+- Language is strongly typed with static scoping
+- Strict evaluation
+- Custom types for Notes, Phrases, and Songs
+- .play() method which generates guitar tabs 
 
 ### Team Members
 - Henri Vrod (Project Manager): Ensured team-members were on top of each of their responsibilitys and guaranteed timely deliverables. Led creation of the Semantic checker. Coded implementation for If, Else, booleans, Logical Operators and Arrays in each level of the architecture. Set up meetings and pair-programming sessions. Made many of the basic testers.
-- Pierre Rodgers (Language Guru):
-- Max Acebal (System Architect):
+- Pierre Rodgers (Language Guru): led the LRM creation, and helped resolve any questions for finalizing syntax. In the AST/SAST files, I focussed on loops, the Note type, and phrases. In IR gen, I worked most closely on Notes, Phrases, and Songs, getting them to store in memory. I also worked making sure that Songs could play by connecting the IR to C code, which was a tricky task involving making sure pointer types, arrays, and memory was passed correctly in the C function call in our OCaml code. I also helped to write some test scripts and a number of tests for the tests folder. 
+
+- Max Acebal (System Architect): As System architect I ensured each phase of the compiler linked seamlessly (required a lot of going back and forth and correcting bugs within each file). I drove the endeavor for the Handl ir code generation phase by repurposing microc irgen.ml file for our use case. Helped solve significant memory errors with other team members for custom types and arrays. In the scanner and parser, I was initially responsible for Phrases, sequencing, return statements, separators, quotes, and Strings.
 - Kyle Christopher (Tester):
 
 ### Building HANDL
@@ -39,4 +43,3 @@ OR
 sh demo.sh ./tests/<TEST_NAME>.handl
 <TEST_NAME>.exe
 ```
-
